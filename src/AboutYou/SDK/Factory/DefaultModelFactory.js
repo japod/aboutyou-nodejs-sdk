@@ -211,7 +211,7 @@ DefaultModelFactory.prototype.createFacetTypes = function (jsonArray) {
 /**
  *
  * @param jsonObject
- * @returns {Image}
+ * @returns {ImageModel}
  */
 DefaultModelFactory.prototype.createImage = function (jsonObject) {
     return Image.createFromJson(jsonObject);

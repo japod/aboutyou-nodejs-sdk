@@ -17,8 +17,8 @@ function Client(appId, appPassword, apiEndPoint) {
     this.API_END_POINT_LIVE = 'https://shop-api.aboutyou.de/api';
 
 
-    this._appId;
-    this._appPassword;
+    this.appId;
+    this.appPassword;
     this._apiEndPoint;
 
     // constructor code
@@ -33,8 +33,8 @@ Client.prototype = {
      * @param {string} appPassword  the app password/token for client authentication.
      */
     setAppCredentials: function (appId, appPassword) {
-        this._appId = appId;
-        this._appPassword = appPassword;
+        this.appId = appId;
+        this.appPassword = appPassword;
     },
 
     /**
@@ -79,8 +79,8 @@ Client.prototype = {
         var defer = when.defer();
         var options = {
             'auth': {
-                'user': this._appId.toString(),
-                'pass': this._appPassword
+                'user': this.appId.toString(),
+                'pass': this.appPassword
             },
             'body': body
         };

@@ -23,6 +23,11 @@ function ProductSearchResult() {
  * @returns {ProductSearchResult}
  */
 ProductSearchResult.createFromJson = function (jsonObject, factory) {
+
+    if (!jsonObject || !factory) {
+        return;
+    }
+
     var productSearchResult = new ProductSearchResult();
 
     productSearchResult._pageHash = jsonObject.pageHash || null;
@@ -51,6 +56,11 @@ ProductSearchResult.prototype.getPageHash = function () {
 }
 
 ProductSearchResult.prototype.parseFacets = function (jsonObject, factory) {
+
+    if (!jsonObject || !factory) {
+        return;
+    }
+
     if (!_.isEmpty(jsonObject.categories)) {
         this.categories = factory.createCategoriesFacets(jsonObject.categories);
         delete jsonObject.categories;
@@ -67,6 +77,7 @@ ProductSearchResult.prototype.parseFacets = function (jsonObject, factory) {
 
     this.facets = factory.createFacetsCounts(jsonObject);
     delete jsonObject.facets;
+
 }
 
 /**

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/CategoryManager/DefaultCategoryManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/CategoryManager/DefaultCategoryManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+var Category = require('../Model/Category')
+
+CategoryManager.DEFAULT_CACHE_DURATION = 7200;
+
+/**
+ * @constructor
+ * @param {string} appId  This must set, when you use more then one instances with different apps
+ * @param {CacheProvider} cache
+ * @returns {CategoryManager}
+ */
+function CategoryManager(appId, cache) {
+    var appId = appId || '';
+    this.cache = cache || null;
+    this.cacheKey = 'AY:SDK:' + appId + ':categories';
+    //this.loadCachedCategories();
+};
+
+CategoryManager.prototype.loadCachedCategories = function () {
+    if (this.cache) {
+        this.categories = this.cache.fetch(this.cacheKey) || null;
+    }
+};
+
+CategoryManager.prototype.cacheCategories = function () {
+    if (this.cache) {
+        this.cache.save(this.cacheKey, this.categories, CategoryManager.DEFAULT_CACHE_DURATION);
+    }
+};
+
+CategoryManager.prototype.clearCache = function () {
+    if (this.cache) {
+        this.cache.delete(this.cacheKey);
+    }
+};
+
+/**
+ * @param jsonObject
+ * @returns {CategoryManager}
+ */
+CategoryManager.prototype.parseJson = function (jsonObject, factory) {
+    this.categories = [];
+
+    this.parentChildIds = jsonObject.parent_child;
+
+    for (var id in jsonObject.ids) {
+        var jsonCategory = jsonObject.ids[id];
+        this.categories.push(factory.createCategory(jsonCategory, this));
+    }
+
+    //this.cacheCategories();
+
+    return this;
+}
+
+/**
+ *
+ * @returns {boolean}
+ */
+CategoryManager.prototype.isEmpty = function () {
+    return (this.categories &amp;&amp; this.categories.length > 0) ? false : true;
+};
+
+/**
+ *
+ * @param {boolean} activeOnly
+ * @returns {Category[]}
+ */
+CategoryManager.prototype.getCategoryTree = function (activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+    return this.getSubcategories(0, activeOnly);
+}
+
+/**
+ *
+ * @param {number} id
+ * @returns {Category|null}
+ */
+CategoryManager.prototype.getCategory = function (id) {
+    for (var index in this.categories) {
+        var category = this.categories[index];
+        if (category.id === id) {
+            return category;
+        }
+    }
+    return null;
+};
+
+/**
+ *
+ * @param {number[]} ids
+ * @param {boolean}activeOnly
+ * @returns {Category[]}
+ */
+CategoryManager.prototype.getCategories = function (ids, activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+
+    if (!this.categories) {
+        return [];
+    }
+
+    if (!ids) {
+        return this.categories;
+    }
+
+    var categories = [];
+
+    for (var i = 0; i &lt; this.categories.length; i++) {
+        var category = this.categories[i];
+
+        if ((activeOnly === Category.ALL || category.isActive()) &amp;&amp; ids.indexOf(category.getId()) >= 0) {
+            categories.push(category);
+
+        }
+    }
+
+    return categories;
+};
+
+/**
+ * @param {numnber} id
+ * @param {boolean} activeOnly
+ *
+ * @returns {Category[]}
+ */
+CategoryManager.prototype.getSubcategories = function (id, activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+
+    if (!this.parentChildIds[id]) {
+        return [];
+    }
+
+    var ids = this.parentChildIds[id];
+    ids = ids.map(function (id) {
+        return parseInt(id, 10);
+    });
+
+    return this.getCategories(ids, activeOnly);
+};
+
+/**
+ * @param {boolean} activeOnly
+ *
+ * @returns {Category[]}
+ */
+CategoryManager.prototype.getCategoryTree = function (activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+    return this.getSubcategories(0, activeOnly);
+};
+
+/**
+ * @returns {Category[]}
+ */
+CategoryManager.prototype.getAllCategories = function () {
+    return this.categories;
+};
+
+/**
+ *
+ * @param {string} name
+ * @param {boolean} activeOnly
+ * @returns {Category}
+ */
+CategoryManager.prototype.getFirstCategoryByName = function (name, activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+    for (var category in this.categories) {
+        if (category.getName() === name &amp;&amp; (activeOnly === Category.ALL || category.isActive())) {
+            return category;
+        }
+    }
+    return null;
+};
+
+/**
+ *
+ * @param {string} name
+ * @param {boolean} activeOnly
+ * @returns {Category}
+ */
+CategoryManager.prototype.getCategoriesByName = function (name, activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+
+    var categories = _.filter(this.categories, function (category) {
+        return (category.getName() === name &amp;&amp; (activeOnly === Category.ALL || category.isActive()));
+    });
+
+    return categories;
+};
+
+module.exports = CategoryManager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="_.html">_</a></li><li><a href="AboutYou.html">AboutYou</a></li><li><a href="Autocomplete.html">Autocomplete</a></li><li><a href="CategoriesResult.html">CategoriesResult</a></li><li><a href="Category.html">Category</a></li><li><a href="CategoryManager.html">CategoryManager</a></li><li><a href="CategoryTree.html">CategoryTree</a></li><li><a href="Client.html">Client</a></li><li><a href="DefaultFacetManager.html">DefaultFacetManager</a></li><li><a href="DefaultModelFactory.html">DefaultModelFactory</a></li><li><a href="Facet.html">Facet</a></li><li><a href="FacetCount.html">FacetCount</a></li><li><a href="FacetCounts.html">FacetCounts</a></li><li><a href="FacetGroup.html">FacetGroup</a></li><li><a href="FacetGroupSet.html">FacetGroupSet</a></li><li><a href="Image.html">Image</a></li><li><a href="ImageSize.html">ImageSize</a></li><li><a href="Product.html">Product</a></li><li><a href="ProductsEansResult.html">ProductsEansResult</a></li><li><a href="ProductSearchResult.html">ProductSearchResult</a></li><li><a href="ProductsResult.html">ProductsResult</a></li><li><a href="Query.html">Query</a></li><li><a href="SaleCounts.html">SaleCounts</a></li><li><a href="Variant.html">Variant</a></li><li><a href="VariantsResult.html">VariantsResult</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:35:01 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

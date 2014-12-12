@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/Model/Variant.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/Model/Variant.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+var Image = require('./Image');
+var FacetGroupSet = require('./FacetGroupSet');
+var _ = require('underscore');
+
+/**
+ * @constructor
+ * @returns {Variant}
+ */
+function Variant() {
+};
+
+/**
+ * @static
+ * @param {Object} jsonObject
+ * @param {DefaultModelFactory} factory
+ * @param {Product} product
+ *
+ * @returns {Variant}
+ */
+Variant.createFromJson = function (jsonObject, product) {
+    var variant = new Variant();
+
+    variant.jsonObject = jsonObject;
+    variant.product = product;
+
+    return variant;
+};
+
+/**
+ * @returns {number}
+ */
+Variant.prototype.getId = function () {
+    return this.jsonObject.id;
+}
+
+/**
+ * @returns {ImageModel[]}
+ */
+Variant.prototype.getImages = function () {
+    var images = [];
+    if (this.jsonObject.images &amp;&amp; this.jsonObject.images.length > 0) {
+        for (var i = 0; i &lt; this.jsonObject.images.length; i++) {
+            var image = this.jsonObject.images[i];
+            images.push(Image.createFromJson(image));
+        }
+    }
+    return images;
+};
+
+/**
+ * @returns {string}
+ */
+Variant.prototype.getAboutNumber = function () {
+    return this.jsonObject.about_number ? this.jsonObject.about_number : null;
+};
+
+/**
+ * @returns {Product}
+ */
+Variant.prototype.getProduct = function () {
+    return this.product;
+};
+
+/**
+ * Get image by given hash.
+ *
+ * @param {string} hash The image hash.
+ *
+ * @returns {ImageModel}
+ */
+Variant.prototype.getImageByHash = function (hash) {
+    var images = this.getImages();
+
+    for (var i = 0; i &lt; images.length; i++) {
+        var image = images[i];
+        if (image.getHash() === hash) {
+            return image;
+        }
+    }
+    return null;
+};
+
+/**
+ * Select a specific image.
+ *
+ * @param {string} hash The image hash or null for default image.
+ *
+ * @returns {null}
+ *
+ * @depracted
+ */
+Variant.prototype.selectImage = function (hash) {
+    if (hash) {
+        this.selectedImage = this.getImageByHash(hash);
+    } else {
+        this.selectedImage = null;
+    }
+};
+
+/**
+ * Get selected or default image.
+ *
+ * @returns {ImageModel}
+ */
+Variant.prototype.getImage = function () {
+    if (this.selectedImage) {
+        return this.selectedImage;
+    } else {
+        var images = this.getImages();
+        if (images[0]) {
+            return images[0];
+        }
+    }
+    return null;
+};
+
+/**
+ * @returns {string}
+ */
+Variant.prototype.getEan = function () {
+    return this.jsonObject.ean;
+};
+
+/**
+ * @returns {boolean}
+ */
+Variant.prototype.isDefault = function () {
+    return this.jsonObject.default;
+};
+
+/**
+ * Returns the price in euro cent
+ *
+ * @returns {number}
+ */
+Variant.prototype.getPrice = function () {
+    return this.jsonObject.price;
+};
+
+/**
+ * Returns the price in euro cent
+ *
+ * @returns {number}
+ */
+Variant.prototype.getOldPrice = function () {
+    return this.jsonObject.old_price;
+};
+
+/**
+ * Returns the price in euro cent
+ *
+ * @returns {number}
+ */
+Variant.prototype.getRetailPrice = function () {
+    return this.jsonObject.retail_price;
+};
+
+/**
+ * Returns the unstructured additional info
+ *
+ * @returns {Object|null}
+ */
+Variant.prototype.getAdditionalInfo = function () {
+    return jsonObject.additional_info ? this.jsonObject.additional_info : null;
+};
+
+/**
+ * Returns the quantity of still existing units of this variant.
+ * Please mind, that this quantity doesn't need to be up to date.
+ * You should check via live_variant for the real quantity before
+ * adding a product into the cart.
+ *
+ * @returns {number}
+ */
+Variant.prototype.getQuantity = function () {
+    return this.jsonObject.quantity ? this.jsonObject.quantity : 0;
+};
+
+
+/**
+ * @returns {number[]}
+ */
+Variant.prototype.getFacetIds = function () {
+    return this.parseFacetIds(this.jsonObject);
+};
+
+/**
+ * @returns {FacetGroupSet}
+ */
+Variant.prototype.getFacetGroupSet = function () {
+    if (!this.facetGroups) {
+        this.generateFacetGroupSet();
+    }
+
+    return this.facetGroups;
+};
+
+/**
+ * @param {number} groupId
+ * @returns {FacetGroup|null}
+ */
+Variant.prototype.getFacetGroup = function (groupId) {
+    var groups = this.getFacetGroupSet();
+    return groups.getGroup(groupId);
+};
+
+/**
+ * @returns {Date|null}
+ */
+Variant.prototype.getFirstActiveDate = function () {
+    return this.jsonObject.first_active_date ? new Date(this.jsonObject.first_active_date) : null;
+};
+
+/**
+ * @returns {Date|null}
+ */
+Variant.prototype.getFirstSaleDate = function () {
+    return this.jsonObject.first_sale_date ? new Date($this.jsonObject.first_sale_date) : null;
+};
+
+/**
+ * @returns {Date|null}
+ */
+Variant.prototype.getCreatedDate = function () {
+    return this.jsonObject.created_date ? new Date(this.jsonObject.created_date) : null;
+};
+
+/**
+ * @returns {Date|null}
+ */
+Variant.prototype.getUpdatedDate = function () {
+    return this.jsonObject.updated_date ? new Date(this.jsonObject.updated_date) : null;
+};
+
+/**
+ * @returns {FacetGroup|null}
+ */
+Variant.prototype.getColor = function () {
+    return this.getFacetGroup(this.FACET_COLOR);
+};
+
+/**
+ * @returns {FacetGroup|null}
+ */
+Variant.prototype.getLength = function () {
+    return this.getFacetGroup(this.FACET_LENGTH);
+};
+
+/**
+ * @returns {FacetGroup|null}
+ */
+Variant.prototype.getSize = function () {
+    /**
+     * @todo: Instance level caching
+     */
+    var groupId = this.getSizeGroupId();
+
+    if (groupId) {
+        return this.getFacetGroup(groupId);
+    }
+};
+
+/**
+ * Returns the quantity per pack for this variant.
+ * By default, this returns 1. But some items can have a bigger number.
+ *
+ * @returns {number} quantity per pack
+ */
+Variant.prototype.getQuantityPerPack = function () {
+    var facetGroup = this.getFacetGroup(this.FACET_QUANTITY_PER_PACK);
+
+    if (!facetGroup) {
+        return 1;
+    }
+
+    var facets = facetGroup.getFacets();
+
+    if (!facets) {
+        return 1;
+    }
+
+    var facet = facets.shift();
+
+    return facet.getValue();
+};
+
+/**
+ * get the season code e.g. "HW 14 / hw14"
+ *
+ * @returns {FacetGroup|null}
+ */
+Variant.prototype.getSeasonCode = function () {
+    return this.getFacetGroup(this.FACET_SEASON_CODE);
+};
+
+var getSizeGroupId = function () {
+    var keys = [];
+
+    var groups = this.getFacetGroupSet().getGroups();
+
+    if (Array.isArray(groups)) {
+        for (var i = 0; i &lt; groups.length; i++) {
+            var group = groups[i];
+            keys[group.getName()] = group.getGroupId();
+        }
+    }
+
+    var sizeRun = this.getFacetGroup(this.FACET_SIZE_RUN);
+
+    if (sizeRun) {
+        var facets = sizeRun.getFacets();
+        for (var i = 0; i &lt; facets.length; i++) {
+            var groupName = facets[i].getValue();
+            if (keys[groupName]) {
+                return keys[groupName];
+            }
+        }
+    }
+    if (keys['size']) {
+        return keys['size'];
+    }
+    if (keys['size_run']) {
+        return keys['size_run'];
+    }
+
+    return null;
+};
+
+// helpers
+Variant.prototype.parseFacetIds = function (jsonObject) {
+    var ids = {};
+    if (!_.isEmpty(jsonObject.attributes)) {
+        var attrs = jsonObject.attributes;
+
+        for (var group in attrs) {
+            var gid = group.substr(11);
+            ids[gid] = attrs[group];
+        }
+    }
+    return ids;
+}
+
+Variant.prototype.generateFacetGroupSet = function () {
+    var ids = this.parseFacetIds(this.jsonObject);
+    this.facetGroups = new FacetGroupSet(ids);
+};
+
+// dot accessors
+Object.defineProperty(Variant.prototype, 'id', {
+    get: Variant.prototype.getId
+});
+
+Object.defineProperty(Variant.prototype, 'images', {
+    get: Variant.prototype.getImages
+});
+
+Object.defineProperty(Variant.prototype, 'aboutNumber', {
+    get: Variant.prototype.getAboutNumber
+});
+
+Object.defineProperty(Variant.prototype, 'image', {
+    get: Variant.prototype.getImage
+});
+
+Object.defineProperty(Variant.prototype, 'ean', {
+    get: Variant.prototype.getEan
+});
+
+Object.defineProperty(Variant.prototype, 'default', {
+    get: Variant.prototype.isDefault
+});
+
+Object.defineProperty(Variant.prototype, 'price', {
+    get: Variant.prototype.getPrice
+});
+
+Object.defineProperty(Variant.prototype, 'oldPice', {
+    get: Variant.prototype.getOldPrice
+});
+
+Object.defineProperty(Variant.prototype, 'retailPrice', {
+    get: Variant.prototype.getRetailPrice
+});
+
+Object.defineProperty(Variant.prototype, 'additionalInfo', {
+    get: Variant.prototype.getAdditionalInfo
+});
+
+Object.defineProperty(Variant.prototype, 'quantity', {
+    get: Variant.prototype.getQuantity
+});
+
+Object.defineProperty(Variant.prototype, 'facetIds', {
+    get: Variant.prototype.getFacetIds
+});
+
+Object.defineProperty(Variant.prototype, 'facetGroupSet', {
+    get: Variant.prototype.getFacetGroupSet
+});
+
+Object.defineProperty(Variant.prototype, 'firstActiveDate', {
+    get: Variant.prototype.getFirstActiveDate
+});
+
+Object.defineProperty(Variant.prototype, 'firstSaleDate', {
+    get: Variant.prototype.getFirstSaleDate
+});
+
+Object.defineProperty(Variant.prototype, 'createdDate', {
+    get: Variant.prototype.getCreatedDate
+});
+
+Object.defineProperty(Variant.prototype, 'updatedDate', {
+    get: Variant.prototype.getUpdatedDate
+});
+
+Object.defineProperty(Variant.prototype, 'color', {
+    get: Variant.prototype.getColor
+});
+
+Object.defineProperty(Variant.prototype, 'length', {
+    get: Variant.prototype.getLength
+});
+
+Object.defineProperty(Variant.prototype, 'size', {
+    get: Variant.prototype.getSize
+});
+
+Object.defineProperty(Variant.prototype, 'quantityPerPack', {
+    get: Variant.prototype.getQuantityPerPack
+});
+
+Object.defineProperty(Variant.prototype, 'seasonCode', {
+    get: Variant.prototype.getSeasonCode
+});
+
+module.exports = Variant;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="_.html">_</a></li><li><a href="AboutYou.html">AboutYou</a></li><li><a href="Autocomplete.html">Autocomplete</a></li><li><a href="CategoriesResult.html">CategoriesResult</a></li><li><a href="Category.html">Category</a></li><li><a href="CategoryManager.html">CategoryManager</a></li><li><a href="CategoryTree.html">CategoryTree</a></li><li><a href="Client.html">Client</a></li><li><a href="DefaultFacetManager.html">DefaultFacetManager</a></li><li><a href="DefaultModelFactory.html">DefaultModelFactory</a></li><li><a href="Facet.html">Facet</a></li><li><a href="FacetCount.html">FacetCount</a></li><li><a href="FacetCounts.html">FacetCounts</a></li><li><a href="FacetGroup.html">FacetGroup</a></li><li><a href="FacetGroupSet.html">FacetGroupSet</a></li><li><a href="Image.html">Image</a></li><li><a href="ImageSize.html">ImageSize</a></li><li><a href="Product.html">Product</a></li><li><a href="ProductsEansResult.html">ProductsEansResult</a></li><li><a href="ProductSearchResult.html">ProductSearchResult</a></li><li><a href="ProductsResult.html">ProductsResult</a></li><li><a href="Query.html">Query</a></li><li><a href="SaleCounts.html">SaleCounts</a></li><li><a href="Variant.html">Variant</a></li><li><a href="VariantsResult.html">VariantsResult</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:35:01 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

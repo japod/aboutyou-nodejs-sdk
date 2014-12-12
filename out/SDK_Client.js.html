@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/Client.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/Client.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var request = require('request');
+var when = require('when');
+
+/**
+ * @constructor
+ * @param {string} appId
+ * @param {string} appPassword
+ * @property {string} apiEndPoint 'live' for live environment, 'stage' for staging
+ * @returns {Client} Client instance
+ **/
+function Client(appId, appPassword, apiEndPoint) {
+    // properties
+    this.API_END_POINT_STAGE = 'http://shop-api.staging.aboutyou.de/api';
+    this.API_END_POINT_SANDBOX = 'http://shop-api.sandbox.aboutyou.de/api';
+    this.API_END_POINT_LIVE = 'https://shop-api.aboutyou.de/api';
+
+
+    this._appId;
+    this.appPassword;
+    this._apiEndPoint;
+
+    // constructor code
+    this.setAppCredentials(appId, appPassword);
+    this.setApiEndpoint(apiEndPoint);
+};
+
+Client.prototype = {
+
+    /**
+     * @param {string} appId        the app id for client authentication
+     * @param {string} appPassword  the app password/token for client authentication.
+     */
+    setAppCredentials: function (appId, appPassword) {
+        this._appId = appId;
+        this.appPassword = appPassword;
+    },
+
+    /**
+     * @returns {string} current used api endpoint
+     */
+    getApiEndPoint: function () {
+        return this._apiEndPoint;
+    },
+
+
+    /**
+     * @param {string} apiEndPoint  the endpoint can be the string 'stage' or 'live',
+     *                              then the default endpoints will be used or
+     *                              an absolute url
+     */
+    setApiEndpoint: function (apiEndPoint) {
+        switch (apiEndPoint) {
+            case 'stage':
+                this._apiEndPoint = this.API_END_POINT_STAGE;
+                break;
+            case 'sandbox':
+                this._apiEndPoint = this.API_END_POINT_SANDBOX;
+                break;
+            case 'live':
+                this._apiEndPoint = this.API_END_POINT_LIVE;
+                break;
+            default:
+                this._apiEndPoint = apiEndPoint;
+        }
+    },
+
+    /**
+     * Builds a JSON string representing the request data.
+     * Executes the API request.
+     *
+     * @param {string} body the queries as json string
+     *
+     * @return {Promise} promise response object
+     *
+     */
+    request: function (body) {
+        var defer = when.defer();
+        var options = {
+            'auth': {
+                'user': this._appId.toString(),
+                'pass': this.appPassword
+            },
+            'body': body
+        };
+
+        request.post(this.getApiEndPoint(), options, function (error, response, body) {
+            if (error) {
+                defer.reject(error);
+            } else {
+                defer.resolve(response);
+            }
+        });
+
+        return defer.promise;
+    }
+};
+
+module.exports = Client;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="_.html">_</a></li><li><a href="AboutYou.html">AboutYou</a></li><li><a href="Autocomplete.html">Autocomplete</a></li><li><a href="CategoriesResult.html">CategoriesResult</a></li><li><a href="Category.html">Category</a></li><li><a href="CategoryManager.html">CategoryManager</a></li><li><a href="CategoryTree.html">CategoryTree</a></li><li><a href="Client.html">Client</a></li><li><a href="DefaultFacetManager.html">DefaultFacetManager</a></li><li><a href="DefaultModelFactory.html">DefaultModelFactory</a></li><li><a href="Facet.html">Facet</a></li><li><a href="FacetCount.html">FacetCount</a></li><li><a href="FacetCounts.html">FacetCounts</a></li><li><a href="FacetGroup.html">FacetGroup</a></li><li><a href="FacetGroupSet.html">FacetGroupSet</a></li><li><a href="Image.html">Image</a></li><li><a href="ImageSize.html">ImageSize</a></li><li><a href="Product.html">Product</a></li><li><a href="ProductsEansResult.html">ProductsEansResult</a></li><li><a href="ProductSearchResult.html">ProductSearchResult</a></li><li><a href="ProductsResult.html">ProductsResult</a></li><li><a href="Query.html">Query</a></li><li><a href="SaleCounts.html">SaleCounts</a></li><li><a href="Variant.html">Variant</a></li><li><a href="VariantsResult.html">VariantsResult</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:35:01 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

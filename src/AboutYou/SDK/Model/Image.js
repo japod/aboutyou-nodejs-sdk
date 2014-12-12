@@ -16,7 +16,7 @@ function Image() {
 /**
  * @static
  * @param {Object} jsonObject
- * @returns {Image}
+ * @returns {ImageModel}
  */
 Image.createFromJson = function (jsonObject) {
     var image = new Image();

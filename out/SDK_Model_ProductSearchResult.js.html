@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/Model/ProductSearchResult.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/Model/ProductSearchResult.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+var _ = require('underscore');
+var Category = require('./Category');
+
+/**
+ * @constructor
+ * @returns {ProductSearchResult}
+ */
+function ProductSearchResult() {
+    this._pageHash = null;
+    this.productCount = 0;
+    this.products = [];
+    this.categories = [];
+    this._rawFacets = null;
+};
+
+
+/**
+ * @static
+ * @param {Object} jsonObject
+ * @param Defaultclear
+ * @returns {ProductSearchResult}
+ */
+ProductSearchResult.createFromJson = function (jsonObject, factory) {
+
+    if (!jsonObject || !factory) {
+        return;
+    }
+
+    var productSearchResult = new ProductSearchResult();
+
+    productSearchResult._pageHash = jsonObject.pageHash || null;
+    productSearchResult.products = [];
+    productSearchResult.productCount = jsonObject.product_count;
+    productSearchResult._rawFacets = jsonObject.facets;
+
+    if (jsonObject.products) {
+        for (var i = 0; i &lt; jsonObject.products.length; i++) {
+            var jsonProduct = jsonObject.products[i];
+            var product = factory.createProduct(jsonProduct);
+            productSearchResult.products.push(product);
+        }
+    }
+
+    productSearchResult.parseFacets(jsonObject.facets, factory);
+
+    return productSearchResult;
+};
+
+/**
+ * @returns {string}
+ */
+ProductSearchResult.prototype.getPageHash = function () {
+    return this.pageHash;
+}
+
+ProductSearchResult.prototype.parseFacets = function (jsonObject, factory) {
+
+    if (!jsonObject || !factory) {
+        return;
+    }
+
+    if (!_.isEmpty(jsonObject.categories)) {
+        this.categories = factory.createCategoriesFacets(jsonObject.categories);
+        delete jsonObject.categories;
+    }
+    if (!_.isEmpty(jsonObject.prices)) {
+        this.priceRanges = factory.createPriceRanges(jsonObject.prices);
+        delete jsonObject.prices;
+    }
+
+    if (!_.isEmpty(jsonObject.sale)) {
+        this.saleCounts = factory.createSaleFacet(jsonObject.sale);
+        delete jsonObject.sale;
+    }
+
+    this.facets = factory.createFacetsCounts(jsonObject);
+    delete jsonObject.facets;
+
+}
+
+/**
+ * @returns {number}
+ */
+ProductSearchResult.prototype.getProductCount = function () {
+    return this.productCount;
+};
+
+/**
+ * @returns {Object}
+ */
+ProductSearchResult.prototype.getRawFacets = function () {
+    return this.rawFacets;
+}
+
+/**
+ * @returns {ProductSearchResult|FacetCounts[]}
+ */
+ProductSearchResult.prototype.getFacets = function () {
+    return this.facets;
+}
+
+/**
+ * @returns {PriceRange[]}
+ */
+ProductSearchResult.prototype.getPriceRanges = function () {
+    return this.priceRanges;
+}
+
+/**
+ * @returns {Product[]}
+ */
+ProductSearchResult.prototype.getProducts = function () {
+    return this.products;
+};
+
+/**
+ * Returns the min price in euro cent or null, if the price range was not requested/selected
+ *
+ * @returns {number|null}
+ */
+ProductSearchResult.prototype.getMinPrice = function () {
+    if (_.empty(this.priceRanges)) return null;
+
+    var maxPrice = 0;
+
+    this.priceRanges.reverse().forEach(function (priceRange) {
+        if (priceRange.getProductCount() === 0) {
+            return;
+        }
+
+        return priceRange.getMin();
+    });
+
+
+    return this.priceRanges[0].getMax();
+}
+
+/**
+ * Returns the max price in euro cent, if the price range was not requested/selected
+ *
+ * @returns {number|null}
+ */
+ProductSearchResult.prototype.getMaxPrice = function () {
+    if (_.empty(this.priceRanges)) return null;
+
+    var maxPrice = 0;
+
+    this.priceRanges.reverse().forEach(function (priceRange) {
+        if (priceRange.getProductCount() === 0) {
+            return;
+        }
+
+        return priceRange.getMax();
+    });
+
+
+    return _.last(this.priceRanges).getMax();
+}
+
+/**
+ * @returns {number} SaleCounts
+ */
+ProductSearchResult.prototype.getSaleCounts = function () {
+    return this.saleCounts;
+}
+
+/**
+ * @returns {Category[]}
+ */
+ProductSearchResult.prototype.getCategories = function () {
+    return this.categories;
+};
+
+/**
+ * @returns {Category[]}
+ */
+ProductSearchResult.prototype.getCategoryTree = function () {
+    var topLevelCategories = [];
+    this.categories.forEach(function (category) {
+        if (category.getParent() === null) {
+            topLevelCategories.push(category);
+        }
+    });
+    return topLevelCategories;
+}
+
+
+module.exports = ProductSearchResult;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="_.html">_</a></li><li><a href="AboutYou.html">AboutYou</a></li><li><a href="Autocomplete.html">Autocomplete</a></li><li><a href="CategoriesResult.html">CategoriesResult</a></li><li><a href="Category.html">Category</a></li><li><a href="CategoryManager.html">CategoryManager</a></li><li><a href="CategoryTree.html">CategoryTree</a></li><li><a href="Client.html">Client</a></li><li><a href="DefaultFacetManager.html">DefaultFacetManager</a></li><li><a href="DefaultModelFactory.html">DefaultModelFactory</a></li><li><a href="Facet.html">Facet</a></li><li><a href="FacetCount.html">FacetCount</a></li><li><a href="FacetCounts.html">FacetCounts</a></li><li><a href="FacetGroup.html">FacetGroup</a></li><li><a href="FacetGroupSet.html">FacetGroupSet</a></li><li><a href="Image.html">Image</a></li><li><a href="ImageSize.html">ImageSize</a></li><li><a href="Product.html">Product</a></li><li><a href="ProductsEansResult.html">ProductsEansResult</a></li><li><a href="ProductSearchResult.html">ProductSearchResult</a></li><li><a href="ProductsResult.html">ProductsResult</a></li><li><a href="Query.html">Query</a></li><li><a href="SaleCounts.html">SaleCounts</a></li><li><a href="Variant.html">Variant</a></li><li><a href="VariantsResult.html">VariantsResult</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:35:01 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -88,7 +88,7 @@ Product.prototype.getMaxPrice = function () {
 };
 
 /**
- * @returns {Image|null}
+ * @returns {ImageModel|null}
  */
 Product.prototype.getDefaultImage = function () {
     return this.defaultImage;

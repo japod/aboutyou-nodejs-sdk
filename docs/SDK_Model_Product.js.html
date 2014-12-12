@@ -39,103 +39,104 @@ var Image = require('./Image'),
  * @constructor
  * @return {Product}
  */
-function Product() {};
+function Product() {
+};
 
 /**
  * @returns {boolean}
  */
-Product.prototype.isActive = function() {
+Product.prototype.isActive = function () {
     return this.isActive;
 };
 
 /**
  * @returns {Facet}
  */
-Product.prototype.getBrand = function() {
+Product.prototype.getBrand = function () {
     return this.getFacetGroupSet().getFacet(0, this.brandId);
 };
 
 /**
  * @returns {Variant|null}
  */
-Product.prototype.getDefaultVariant = function() {
+Product.prototype.getDefaultVariant = function () {
     return this.defaultVariant;
 };
 
 /**
  * @returns {string|null}
  */
-Product.prototype.getDescriptionLong = function() {
+Product.prototype.getDescriptionLong = function () {
     return this.descriptionLong;
 }
 /**
  * @returns {string|null}
  */
-Product.prototype.getDescriptionShort = function() {
+Product.prototype.getDescriptionShort = function () {
     return this.descriptionShort;
 }
 
 /**
  * @returns {number}
  */
-Product.prototype.getId = function() {
+Product.prototype.getId = function () {
     return this.id;
 }
 
-Product.prototype.getVariants = function() {
+Product.prototype.getVariants = function () {
     return this.variants;
 };
 
 /**
  * @returns {string}
  */
-Product.prototype.getName = function() {
+Product.prototype.getName = function () {
     return this.name;
 };
 
 /**
  * @returns {number}
  */
-Product.prototype.getMinPrice = function() {
+Product.prototype.getMinPrice = function () {
     return this.minPrice;
 };
 
 /**
  * @returns {Product[]}
  */
-Product.prototype.getStyles = function() {
+Product.prototype.getStyles = function () {
     return this.styles;
 };
 
 /**
  * @returns {number}
  */
-Product.prototype.getMaxPrice = function() {
+Product.prototype.getMaxPrice = function () {
     return this.maxPrice;
 };
 
 /**
- * @returns {Image|null}
+ * @returns {ImageModel|null}
  */
-Product.prototype.getDefaultImage = function() {
+Product.prototype.getDefaultImage = function () {
     return this.defaultImage;
 };
 
-Product.prototype.generateFacetGroupSet = function() {
+Product.prototype.generateFacetGroupSet = function () {
     this.facetGroups = new FacetGroupSet(this.facetIds);
 };
 
 /**
  * @returns {FacetGroupSet|null}
  */
-Product.prototype.getFacetGroupSet = function() {
+Product.prototype.getFacetGroupSet = function () {
     if (!this.facetGroups) {
         this.generateFacetGroupSet();
     }
     return this.facetGroups;
 };
 
-Product.prototype.getCategoryIdHierachies = function() {
+Product.prototype.getCategoryIdHierachies = function () {
     return this.categoryIdPaths;
 };
 
@@ -160,7 +161,7 @@ Product.prototype.getCategoryIdHierachies = function() {
  *
  * @returns {Object[]}
  */
-Product.prototype.getFacetIds = function() {
+Product.prototype.getFacetIds = function () {
     return this.facetIds;
 }
 
@@ -171,7 +172,7 @@ Product.prototype.getFacetIds = function() {
  *
  * @return Category|null
  */
-Product.prototype.getCategory = function(active) {
+Product.prototype.getCategory = function (active) {
     active = active || false;
     if (_.isEmpty(this.categoryIdPaths)) {
         return;
@@ -191,8 +192,8 @@ Product.prototype.getCategory = function(active) {
  *
  * @return Category[]
  */
-Product.prototype.getLeafCategories = function(activeOnly) {
-    var activeOnly  = Category.ACTIVE_ONLY;
+Product.prototype.getLeafCategories = function (activeOnly) {
+    var activeOnly = Category.ACTIVE_ONLY;
     var categoryIds = this.getLeafCategoryIds();
 
     var categories = this.getCategoryManager().getCategories(categoryIds, activeOnly);
@@ -200,21 +201,21 @@ Product.prototype.getLeafCategories = function(activeOnly) {
     return categories;
 }
 
-Product.prototype.getRootCategoryIds = function() {
-    var ids = this.categoryIdPaths.map(function(categoryIdPath) {
+Product.prototype.getRootCategoryIds = function () {
+    var ids = this.categoryIdPaths.map(function (categoryIdPath) {
         return categoryIdPath[0];
     });
     return _.uniq(ids);
 };
 
-Product.prototype.getLeafCategoryIds = function() {
-    return _.map(this.categoryIdPaths,function(categoryIdPath) {
-        return categoryIdPath[categoryIdPath.length-1];
+Product.prototype.getLeafCategoryIds = function () {
+    return _.map(this.categoryIdPaths, function (categoryIdPath) {
+        return categoryIdPath[categoryIdPath.length - 1];
     });
 };
 
 
-Product.prototype.getCategories = function(activeOnly) {
+Product.prototype.getCategories = function (activeOnly) {
     var activeOnly = activeOnly || true;
     return this.getRootCategories(activeOnly);
 };
@@ -224,7 +225,7 @@ Product.prototype.getCategories = function(activeOnly) {
  *
  * @returns {Category[]}
  */
-Product.prototype.getRootCategories = function(activeOnly) {
+Product.prototype.getRootCategories = function (activeOnly) {
     var activeOnly = activeOnly || true;
 
     var categoryIds = this.getRootCategoryIds();
@@ -236,28 +237,28 @@ Product.prototype.getRootCategories = function(activeOnly) {
 /**
  * @returns {DefaultCategoryManager}
  */
-Product.prototype.getCategoryManager = function() {
+Product.prototype.getCategoryManager = function () {
     return this.factory.getCategoryManager();
 };
 
 /**
  * @returns {Category|null}
  */
-Product.prototype.getCategoryWithLongestActivePath = function() {
+Product.prototype.getCategoryWithLongestActivePath = function () {
     if (_.isEmpty(this.categoryIdPaths)) {
         return;
     }
 
     // get reverse sorted category paths
-    var pathLengths = _.map(this.categoryIdPaths, function(categoryIdPath) {
+    var pathLengths = _.map(this.categoryIdPaths, function (categoryIdPath) {
         return categoryIdPath.length;
     });
     pathLengths.reverse();
 
-    for(var index in pathLengths) {
+    for (var index in pathLengths) {
         var pathLength = pathLengths[index];
         var categoryPath = this.categoryIdPaths[index];
-        var leafId = categoryPath[categoryPath.length-1];
+        var leafId = categoryPath[categoryPath.length - 1];
 
         var category = this.getCategoryManager().getCategory(leafId, true);
 
@@ -275,7 +276,7 @@ Product.prototype.getCategoryWithLongestActivePath = function() {
  *
  * @returns {Variant}
  */
-Product.prototype.getVariantById = function(variantId) {
+Product.prototype.getVariantById = function (variantId) {
     if (this.variants &amp;&amp; this.variants[variantId]) {
         return this.variants[variantId];
     }
@@ -288,9 +289,9 @@ Product.prototype.getVariantById = function(variantId) {
  *
  * @return {Variant[]}
  */
-Product.prototype.getVariantsByEan = function(ean) {
+Product.prototype.getVariantsByEan = function (ean) {
     var variants = [];
-    this.variants.forEach(function(variant) {
+    this.variants.forEach(function (variant) {
         if (variant.ean === ean) {
             variants.push(variant);
         }
@@ -298,10 +299,10 @@ Product.prototype.getVariantsByEan = function(ean) {
     return variants;
 };
 
-Product.parseVariants = function(jsonObject, product, attributeName) {
+Product.parseVariants = function (jsonObject, product, attributeName) {
     var variants = [];
     if (jsonObject.variants &amp;&amp; jsonObject.variants.length > 0) {
-        for(var i = 0; i &lt; jsonObject.variants.length; i++) {
+        for (var i = 0; i &lt; jsonObject.variants.length; i++) {
             var variant = jsonObject.variants[i];
             variants.push(Variant.createFromJson(variant, product));
         }
@@ -309,18 +310,18 @@ Product.parseVariants = function(jsonObject, product, attributeName) {
     return variants;
 };
 
-Product.parseStyles = function(jsonObject) {
+Product.parseStyles = function (jsonObject) {
     var styles = [];
     var that = this;
     if (jsonObject.styles &amp;&amp; jsonObject.styles.length > 0) {
-        jsonObject.styles.forEach(function(style) {
+        jsonObject.styles.forEach(function (style) {
             styles.push(that.createFromJson(style));
         });
     }
     return styles;
 };
 
-Product.parseFacetIds = function(jsonObject) {
+Product.parseFacetIds = function (jsonObject) {
     var ids = this.parseFacetIdsInAttributesMerged(jsonObject);
     if (ids === null) {
         ids = this.parseFacetIdsInVariants(jsonObject);
@@ -331,7 +332,7 @@ Product.parseFacetIds = function(jsonObject) {
     return (ids !== null) ? ids : [];
 };
 
-Product.parseFacetIdsInAttributesMerged = function(jsonObject) {
+Product.parseFacetIdsInAttributesMerged = function (jsonObject) {
     if (!jsonObject.attributes_merged) {
         return null;
     }
@@ -339,7 +340,7 @@ Product.parseFacetIdsInAttributesMerged = function(jsonObject) {
     return this.parseAttributesJson(jsonObject.attributes_merged);
 };
 
-Product.parseAttributesJson = function(AttributesJsonObject) {
+Product.parseAttributesJson = function (AttributesJsonObject) {
     var ids = {};
 
     for (var group in AttributesJsonObject) {
@@ -353,11 +354,11 @@ Product.parseAttributesJson = function(AttributesJsonObject) {
     return ids;
 };
 
-Product.parseFacetIdsInVariants = function(jsonObject) {
+Product.parseFacetIdsInVariants = function (jsonObject) {
     if (jsonObject.variants) {
         var ids = [];
 
-        for(var i = 0; i &lt; jsonObject.variants.length; i++) {
+        for (var i = 0; i &lt; jsonObject.variants.length; i++) {
             var variant = jsonObject.variants[i];
             ids.push(this.parseAttributesJson(variant.attributes));
         }
@@ -370,7 +371,7 @@ Product.parseFacetIdsInVariants = function(jsonObject) {
     return null;
 };
 
-Product.parseFacetIdsInBrand = function(jsonObject) {
+Product.parseFacetIdsInBrand = function (jsonObject) {
     if (jsonObject.brand_id) {
         return null;
     }
@@ -384,39 +385,39 @@ Product.parseFacetIdsInBrand = function(jsonObject) {
  *
  * @return {Product}
  */
-Product.createFromJson = function(jsonObject, factory) {
+Product.createFromJson = function (jsonObject, factory) {
     var product = new Product();
 
     product.factory = factory;
 
-    product.id                 = jsonObject.id;
-    product.name               = jsonObject.name;
+    product.id = jsonObject.id;
+    product.name = jsonObject.name;
 
-    product.isSale             = typeof(jsonObject.sale) != 'undefined' ? jsonObject.sale : false;
-    product.descriptionShort   = typeof(jsonObject.description_short) != 'undefined' ? jsonObject.description_short : '';
-    product.descriptionLong    = typeof(jsonObject.description_long) != 'undefined' ? jsonObject.description_long : '';
-    product.isActive           = typeof(jsonObject.active) != 'undefined' ? jsonObject.active : true;
-    product.brandId            = typeof(jsonObject.brand_id) != 'undefined' ? jsonObject.brand_id : null;
-    product.merchantId         = typeof(jsonObject.merchant_id) != 'undefined' ? jsonObject.merchant_id : null;
+    product.isSale = typeof(jsonObject.sale) != 'undefined' ? jsonObject.sale : false;
+    product.descriptionShort = typeof(jsonObject.description_short) != 'undefined' ? jsonObject.description_short : '';
+    product.descriptionLong = typeof(jsonObject.description_long) != 'undefined' ? jsonObject.description_long : '';
+    product.isActive = typeof(jsonObject.active) != 'undefined' ? jsonObject.active : true;
+    product.brandId = typeof(jsonObject.brand_id) != 'undefined' ? jsonObject.brand_id : null;
+    product.merchantId = typeof(jsonObject.merchant_id) != 'undefined' ? jsonObject.merchant_id : null;
 
-    product.minPrice         = typeof(jsonObject.min_price) != 'undefined' ? jsonObject.min_price : null;
-    product.maxPrice         = typeof(jsonObject.max_price) != 'undefined' ? jsonObject.max_price : null;
-    product.maxSavingsPrice  = typeof(jsonObject.max_savings) != 'undefined' ? jsonObject.max_savings : null;
+    product.minPrice = typeof(jsonObject.min_price) != 'undefined' ? jsonObject.min_price : null;
+    product.maxPrice = typeof(jsonObject.max_price) != 'undefined' ? jsonObject.max_price : null;
+    product.maxSavingsPrice = typeof(jsonObject.max_savings) != 'undefined' ? jsonObject.max_savings : null;
     product.maxSavingsPercentage = typeof(jsonObject.max_savings_percentage) != 'undefined' ? jsonObject.max_savings_percentage : null;
 
 
-    product.defaultImage     = typeof(jsonObject.default_image) != 'undefined' ? Image.createFromJson(jsonObject.default_image) : null;
-    product.defaultVariant   = typeof(jsonObject.default_variant) != 'undefined' ? Variant.createFromJson(jsonObject.default_variant, product) : null;
-    product.variants         = this.parseVariants(jsonObject, product);
+    product.defaultImage = typeof(jsonObject.default_image) != 'undefined' ? Image.createFromJson(jsonObject.default_image) : null;
+    product.defaultVariant = typeof(jsonObject.default_variant) != 'undefined' ? Variant.createFromJson(jsonObject.default_variant, product) : null;
+    product.variants = this.parseVariants(jsonObject, product);
     product.inactiveVariants = this.parseVariants(jsonObject, product, 'inactive_variants');
 
-    product.styles           = this.parseStyles(jsonObject);
+    product.styles = this.parseStyles(jsonObject);
 
-    var getAppCategoryKey = function() {
+    var getAppCategoryKey = function () {
         var regex = /^categories.*/;
-        for(var key in jsonObject) {
+        for (var key in jsonObject) {
             var match = regex.exec(key);
-            if(match) {
+            if (match) {
                 var key = match[0];
                 return jsonObject[key];
             }
@@ -426,8 +427,8 @@ Product.createFromJson = function(jsonObject, factory) {
 
     var appCategoryKey = getAppCategoryKey();
 
-    product.categoryIdPaths  = appCategoryKey ? appCategoryKey : [];
-    product.facetIds     =  this.parseFacetIds(jsonObject);
+    product.categoryIdPaths = appCategoryKey ? appCategoryKey : [];
+    product.facetIds = this.parseFacetIds(jsonObject);
 
     return product;
 };
@@ -466,7 +467,7 @@ module.exports = Product;</code></pre>
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 13:02:11 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:46:17 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -47,7 +47,7 @@
 var Client = require('./SDK/Client'),
     Query = require('./SDK/Query'),
     helpers = require('./helpers'),
-    Image = require('./SDK/Model/Image'),
+    ImageModel = require('./SDK/Model/Image'),
     ProductFields = require('./SDK/Criteria/ProductFields'),
     ProductSearchCriteria = require('./SDK/Criteria/ProductSearchCriteria'),
     DefaultModelFactory = require('./SDK/Factory/DefaultModelFactory'),
@@ -57,10 +57,6 @@ var Client = require('./SDK/Client'),
     CategoriesResult = require('./SDK/Model/CategoriesResult'),
     _ = require('underscore');
 
-
-var DEVCENTER_API_URL_STAGE = 'http://devcenter-staging-www1.pub.collins.kg:81/api';
-var DEVCENTER_API_URL_SANDBOX = 'http://devcenter-staging-www1.pub.collins.kg:81/api';
-var DEVCENTER_API_URL_LIVE = 'https://developer.aboutyou.de/api';
 var IMAGE_URL_STAGE = 'http://mndb.staging.aboutyou.de/mmdb/file';
 var IMAGE_URL_SANDBOX = 'http://mndb.sandbox.aboutyou.de/mmdb/file';
 var IMAGE_URL_LIVE = 'http://cdn.aboutyou.de/file';
@@ -73,28 +69,28 @@ var IMAGE_URL_LIVE = 'http://cdn.aboutyou.de/file';
  * @returns {AboutYou} AboutYou instance
  */
 function AboutYou(appId, appPassword, apiEndPoint) {
-    var apiEndPoint =  apiEndPoint || "live";
+    apiEndPoint = apiEndPoint || 'live';
 
     if (!(this instanceof AboutYou)) {
         return new AboutYou(appId, appPassword, apiEndPoint);
     }
 
     // constructor code
-    this._client = new Client(appId, appPassword, apiEndPoint);
+    this.client = new Client(appId, appPassword, apiEndPoint);
 
     if (apiEndPoint === 'stage') {
         this.setBaseImageUrl(IMAGE_URL_STAGE);
-        this._environment = 'stage';
+        this.environment = 'stage';
     } else if (apiEndPoint === 'sandbox') {
         this.setBaseImageUrl(IMAGE_URL_SANDBOX);
-        this._environment = 'sandbox';
+        this.environment = 'sandbox';
     } else {
         this.setBaseImageUrl(IMAGE_URL_LIVE);
-        this._environment = 'live';
+        this.environment = 'live';
     }
 
     this._appId = appId;
-    this._appPassword = appPassword;
+    this.appPassword = appPassword;
 }
 
 // public, non-privileged methods.
@@ -103,31 +99,31 @@ AboutYou.prototype = {
     /**
      * @returns Client
      */
-    getClient: function() {
-        return this._client;
+    getClient: function () {
+        return this.client;
     },
 
     /**
      * @param {string} appId        the app id for client authentication
      * @param {string} appPassword  the app password/token for client authentication.
      */
-    setAppCredentials: function(appId, appPassword) {
+    setAppCredentials: function (appId, appPassword) {
         this._appId = appId;
-        this._appPassword = appPassword;
+        this.appPassword = appPassword;
     },
 
     /**
      * @returns {string}
      */
-    getAppId: function() {
+    getAppId: function () {
         return this._appId;
     },
 
     /**
      * @returns string
      */
-    getApiEndPoint: function() {
-        return this._client.getApiEndPoint();
+    getApiEndPoint: function () {
+        return this.client.getApiEndPoint();
     },
 
     /**
@@ -135,14 +131,14 @@ AboutYou.prototype = {
      *                              then the default endpoints will be used or
      *                              an absolute url
      */
-    setApiEndpoint: function(apiEndPoint) {
-        this._client.setApiEndpoint(apiEndPoint);
+    setApiEndpoint: function (apiEndPoint) {
+        this.client.setApiEndpoint(apiEndPoint);
     },
 
     /**
      * @param {null|false|string} baseImageUrl  null will reset to the default url, false to get relative urls, otherwise the url prefix
      */
-    setBaseImageUrl: function(baseImageUrl) {
+    setBaseImageUrl: function (baseImageUrl) {
         if (baseImageUrl === null) {
             this._baseImageUrl = this.IMAGE_URL_LIVE;
         } else if (typeof baseImageUrl === 'string') {
@@ -152,11 +148,11 @@ AboutYou.prototype = {
         }
 
         // we use no factory therefore we set the ImageBaseUrl directly
-        Image.setBaseUrl(this._baseImageUrl);
+        ImageModel.setBaseUrl(this._baseImageUrl);
     },
 
-    getQuery: function() {
-        return new Query(this._client, this.getResultFactory());
+    getQuery: function () {
+        return new Query(this.client, this.getResultFactory());
     },
 
     /**
@@ -176,12 +172,12 @@ AboutYou.prototype = {
      * @param {boolean} fetchIfEmpty
      * @returns DefaultCategoryManager
      */
-    getCategoryManager: function(fetchIfEmpty, callback) {
+    getCategoryManager: function (fetchIfEmpty) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
-        if(typeof(fetchIfEmpty) == 'function' || !fetchIfEmpty) {
+        if (typeof(fetchIfEmpty) === 'function' || !fetchIfEmpty) {
             fetchIfEmpty = true;
         }
 
@@ -190,15 +186,14 @@ AboutYou.prototype = {
         if (fetchIfEmpty &amp;&amp; categoryManager.isEmpty()) {
             var query = this.getQuery();
             query.requireCategoryTree();
-            query.executeSingle().then(function(response) {
+            query.executeSingle().then(function () {
                 defer.resolve(categoryManager);
-            }, function(error) {
+            }, function (error) {
                 defer.reject(error);
             });
         } else {
-            defer.resolve(categoryManager)
+            defer.resolve(categoryManager);
         }
-
 
         return defer.promise;
     },
@@ -210,15 +205,15 @@ AboutYou.prototype = {
      * @deprecated use the CategoryManager instead of
      * @see AboutYou#getCategoryManager
      */
-    fetchCategoryTree: function(callback) {
+    fetchCategoryTree: function () {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
-        this.getCategoryManager(true).then(function(response) {
+        this.getCategoryManager(true).then(function (response) {
             var tree = new CategoryTree(response);
             defer.resolve(tree);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
         return defer.promise;
@@ -231,44 +226,37 @@ AboutYou.prototype = {
      *
      * @returns ProductsResult
      */
-    fetchProductsByIds: function(ids, fields, callback) {
+    fetchProductsByIds: function (ids, fields) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
-        if(!fields || (typeof fields == 'function')) {
+        if (!fields || (typeof fields === 'function')) {
             fields = [];
         }
 
-        if(!(ids instanceof Array)) {
-            if((typeof(ids) === 'number') || (typeof(ids) === 'string')) {
+        // we allow to pass a single ID instead of an array
+        if (!(ids instanceof Array)) {
+            if ((typeof(ids) === 'number') || (typeof(ids) === 'string')) {
                 ids = [ids];
             } else {
                 ids = [];
             }
         }
 
-        // we allow to pass a single ID instead of an array TODO
         var query = this.getQuery();
 
         query.fetchProductsByIds(ids, fields);
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
         return defer.promise;
-
-        /* TODO
-         var productsNotFound = result.getProductsNotFound();
-         if (!empty($productsNotFound) &amp;&amp; $this->logger) {
-            $this->logger->warning('products not found: appid=' . $this->appId . ' product ids=[' . join(',', $productsNotFound) . ']');
-        }
-        */
     },
 
-     /**
+    /**
      * @param {number[]} array of a product's variant ean
      * @param {string[]} required product fields
      * @see {@link https://developer.aboutyou.de/doc/products#produkte-anhand-der-id-oder-ean-auslesen} for further information on product ids and variant eans
@@ -276,37 +264,38 @@ AboutYou.prototype = {
      *
      * @returns ProductsEansResult
      */
-    fetchProductsByEans: function(eans, fields, callback) {
+    fetchProductsByEans: function (eans, fields) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
-        if(!fields || (typeof fields == 'function')) {
+        if (!fields || (typeof fields === 'function')) {
             fields = [];
         }
 
-        if(!(eans instanceof Array)) {
-            eans = [ids];
+        if (!(eans instanceof Array)) {
+            eans = [eans];
         }
 
-        // we allow to pass a single ID instead of an array TODO
+        // we allow to pass a single ID instead of an array
+        if (!(ids instanceof Array)) {
+            if ((typeof(eans) === 'number') || (typeof(eans) === 'string')) {
+                eans = [eans];
+            } else {
+                eans = [];
+            }
+        }
+
         var query = this.getQuery();
 
         query.fetchProductsByEans(eans, fields);
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
         return defer.promise;
-
-        /** TODO
-         var productsNotFound = result.getProductsNotFound();
-         if (!empty($productsNotFound) &amp;&amp; $this->logger) {
-            $this->logger->warning('products not found: appid=' . $this->appId . ' product ids=[' . join(',', $productsNotFound) . ']');
-        }
-         **/
     },
 
     /**
@@ -321,29 +310,23 @@ AboutYou.prototype = {
      * @deprecated use the CategoryManager instead of
      * @see AboutYou#getCategoryManager
      */
-    fetchCategoriesByIds: function(ids, callback) {
+    fetchCategoriesByIds: function (ids) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         // we allow to pass a single ID instead of an array
         if (ids &amp;&amp; !_.isArray(ids)) {
-            var ids = [ids];
-        }
-
-        /* TODO
-        for (id in ids) {
-            if (!is_long($id) &amp;&amp; !ctype_digit($id)) {
-                throw new \InvalidArgumentException('A single category ID must be an integer or a numeric string');
-            } else if ($id &lt; 1) {
-                throw new \InvalidArgumentException('A single category ID must be greater than 0');
+            if ((typeof(ids) === 'number') || (typeof(ids) === 'string')) {
+                ids = [ids];
+            } else {
+                ids = [];
             }
         }
-        */
 
-        this.getCategoryManager().then(function(categoryManager) {
+        this.getCategoryManager().then(function (categoryManager) {
             defer.resolve(new CategoriesResult(categoryManager, ids));
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -357,25 +340,19 @@ AboutYou.prototype = {
      * @returns VariantsResult
      *
      */
-    fetchVariantsByIds: function(ids, callback) {
+    fetchVariantsByIds: function (ids) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         var query = this.getQuery().fetchLiveVariantByIds(ids);
 
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
-        /* TODO
-        $variantsNotFound = $result->getVariantsNotFound();
-        if ($result->hasVariantsNotFound() &amp;&amp; $this->logger) {
-            $this->logger->warning('variants or products for variants not found: appid=' . $this->appId . ' variant ids=[' . join(',', $variantsNotFound) . ']');
-        }
-        */
         return defer.promise;
     },
 
@@ -385,18 +362,18 @@ AboutYou.prototype = {
      * @returns ProductSearchResult
      *
      */
-    fetchProductSearch: function(criteria, callback) {
+    fetchProductSearch: function (criteria) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         var query = this.getQuery();
 
         query.fetchProductSearch(criteria);
 
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -414,21 +391,16 @@ AboutYou.prototype = {
      *
      * @returns Autocomplete
      */
-    fetchAutocomplete: function(
-        searchword,
-        limit,
-        types,
-        callback
-    ) {
+    fetchAutocomplete: function (searchword, limit, types) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
-        if(typeof(limit) == 'function' || !limit) {
+        if (typeof(limit) === 'function' || !limit) {
             limit = 50;
         }
 
-        if(typeof(types) == 'function' || !types) {
+        if (typeof(types) === 'function' || !types) {
             types = ['products', 'categories'];
         }
 
@@ -436,9 +408,9 @@ AboutYou.prototype = {
 
         query.fetchAutocomplete(searchword, limit, types);
 
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -454,21 +426,18 @@ AboutYou.prototype = {
      *
      * @returns {string[]}
      */
-    fetchSuggest: function(
-        searchword,
-        callback
-        ) {
+    fetchSuggest: function (searchword) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         var query = this.getQuery();
 
         query.fetchSuggest(searchword);
 
-        query.executeSingle().then(function(response) {
+        query.executeSingle().then(function (response) {
             defer.resolve(response);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -480,15 +449,15 @@ AboutYou.prototype = {
      * @returns {Object} object keys contain all available product fields
      * @see {@link https://developer.aboutyou.de/doc/products#produktfelder} for further information on product fields
      */
-    getProductFields: function() {
+    getProductFields: function () {
         return ProductFields.CONSTANTS;
     },
 
     /**
      * @returns string
      */
-    getSessionId: function() {
-        return "session_id_yeah";
+    getSessionId: function () {
+        return 'session_id_yeah';
     },
 
     /**
@@ -496,7 +465,7 @@ AboutYou.prototype = {
      *
      * @returns ProductSearchCriteria
      */
-    getProductSearchCriteria: function(sessionId) {
+    getProductSearchCriteria: function (sessionId) {
         sessionId = sessionId || null;
         if (!sessionId) {
             sessionId = this.getSessionId();
@@ -508,7 +477,7 @@ AboutYou.prototype = {
     /**
      * @returns {DefaultModelFactory}
      */
-    getResultFactory: function() {
+    getResultFactory: function () {
         if (!this.modelFactory) {
             this.initDefaultFactory();
         }
@@ -518,33 +487,33 @@ AboutYou.prototype = {
     /**
      * @param {DefaultModelFactory} modelFactory
      */
-    setResultFactory: function(modelFactory) {
+    setResultFactory: function (modelFactory) {
         this.modelFactory = modelFactory;
     },
 
-    getFacetGroups: function() {
+    getFacetGroups: function () {
         return {
-            0   : 'brand',
-            1   : 'color',
-            5   : 'length',
-            206 : 'size_code',
-            172 : 'size_run',
-            211 : 'channel',
-            247 : 'care_symbol',
-            173 : 'clothing_unisex_int',
-            204 : 'clothing_unisex_onesize',
-            175 : 'clothing_womens_de',
-            180 : 'clothing_womens_inch',
-            194 : 'shoes_unisex_eur',
-            189 : 'clothing_mens_inch',
-            185 : 'clothing_womens_scotchsoda_81hours',
-            187 : 'clothing_mens_de',
-            178 : 'clothing_womens_uk',
-            183 : 'clothing_womens_us',
-            181 : 'clothing_womens_belts_cm',
-            190 : 'clothing_mens_belts_cm',
-            176 : 'clothing_womens_it',
-            192 : 'clothing_mens_acc'
+            0: 'brand',
+            1: 'color',
+            5: 'length',
+            206: 'size_code',
+            172: 'size_run',
+            211: 'channel',
+            247: 'care_symbol',
+            173: 'clothing_unisex_int',
+            204: 'clothing_unisex_onesize',
+            175: 'clothing_womens_de',
+            180: 'clothing_womens_inch',
+            194: 'shoes_unisex_eur',
+            189: 'clothing_mens_inch',
+            185: 'clothing_womens_scotchsoda_81hours',
+            187: 'clothing_mens_de',
+            178: 'clothing_womens_uk',
+            183: 'clothing_womens_us',
+            181: 'clothing_womens_belts_cm',
+            190: 'clothing_mens_belts_cm',
+            176: 'clothing_womens_it',
+            192: 'clothing_mens_acc'
         };
     },
 
@@ -556,11 +525,12 @@ AboutYou.prototype = {
      *
      * @returns {string} URL to the JavaScript file
      */
-    getJavaScriptURL: function() {
+    getJavaScriptURL: function () {
+        var url;
         if (this.environment === 'stage') {
-            var url = '//devcenter-staging-www1.pub.collins.kg:81/appjs/' + this._appId + '.js';
+            url = '//devcenter-staging-www1.pub.collins.kg:81/appjs/' + this._appId + '.js';
         } else {
-            var url = '//developer.aboutyou.de/appjs/' + this._appId + '.js';
+            url = '//developer.aboutyou.de/appjs/' + this._appId + '.js';
         }
 
         return url;
@@ -571,7 +541,7 @@ AboutYou.prototype = {
      *
      * @returns {DefaultModelFactory}
      */
-    initDefaultFactory: function(cache) {
+    initDefaultFactory: function (cache) {
         cache = cache || null;
 
         var categoryManager = new DefaultCategoryManager(cache, this._appId);
@@ -583,21 +553,21 @@ AboutYou.prototype = {
             categoryManager
         );
 
-        // TODO resultFactory.setBaseImageUrl(this._baseImageUrl);
+        resultFactory.setBaseImageUrl(this._baseImageUrl);
 
         this.setResultFactory(resultFactory);
     },
 
-    fetchFacet: function(params, callback) {
+    fetchFacet: function (params) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         var query = this.getQuery();
         query.fetchFacet(params);
-        query.executeSingle().then(function(result) {
+        query.executeSingle().then(function (result) {
             defer.resolve(result);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -612,19 +582,19 @@ AboutYou.prototype = {
      * @returns {Facet[]} With facet id as key.
      *
      */
-    fetchFacets: function(groupIds, callback) {
+    fetchFacets: function (groupIds) {
         var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' &amp;&amp; args.pop();
+        var callback = typeof args[args.length - 1] === 'function' &amp;&amp; args.pop();
         var defer = helpers.createDeferred(callback);
 
         var facetManager = this.getResultFactory().getFacetManager();
 
-        if(facetManager.isEmpty()) {
+        if (facetManager.isEmpty()) {
             var query = this.getQuery();
             query.fetchFacets(groupIds);
-            query.executeSingle().then(function(results) {
+            query.executeSingle().then(function () {
                 defer.resolve(facetManager.getFacetsByGroupId(groupIds));
-            }, function(error) {
+            }, function (error) {
                 defer.reject(error);
             });
         } else {
@@ -634,7 +604,7 @@ AboutYou.prototype = {
         return defer.promise;
     },
 
-    getConstants: function() {
+    getConstants: function () {
         return AboutYou.constants;
     }
 };
@@ -702,7 +672,7 @@ module.exports = AboutYou;</code></pre>
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 13:02:11 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:46:17 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

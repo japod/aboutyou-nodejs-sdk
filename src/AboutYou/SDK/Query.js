@@ -37,7 +37,7 @@ function Query(client, factory) {
     this._allQuery = [];
     this._query = [];
 
-    this._client = client;
+    this.client = client;
     this.factory = factory;
 };
 
@@ -61,7 +61,7 @@ Query.prototype = {
 
         var queryString = this.getQueryString();
 
-        this._client.request(queryString).then(function (response) {
+        this.client.request(queryString).then(function (response) {
             var jsonResponse = JSON.parse(response.body);
             var results = that.parseResult(jsonResponse, isMultiRequest);
             defer.resolve(results);

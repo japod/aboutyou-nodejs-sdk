@@ -36,7 +36,7 @@ Variant.prototype.getId = function () {
 }
 
 /**
- * @returns {Image[]}
+ * @returns {ImageModel[]}
  */
 Variant.prototype.getImages = function () {
     var images = [];
@@ -68,7 +68,7 @@ Variant.prototype.getProduct = function () {
  *
  * @param {string} hash The image hash.
  *
- * @returns {Image}
+ * @returns {ImageModel}
  */
 Variant.prototype.getImageByHash = function (hash) {
     var images = this.getImages();
@@ -102,7 +102,7 @@ Variant.prototype.selectImage = function (hash) {
 /**
  * Get selected or default image.
  *
- * @returns {Image}
+ * @returns {ImageModel}
  */
 Variant.prototype.getImage = function () {
     if (this.selectedImage) {

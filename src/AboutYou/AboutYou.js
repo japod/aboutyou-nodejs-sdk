@@ -19,7 +19,7 @@
 var Client = require('./SDK/Client'),
     Query = require('./SDK/Query'),
     helpers = require('./helpers'),
-    Image = require('./SDK/Model/Image'),
+    ImageModel = require('./SDK/Model/Image'),
     ProductFields = require('./SDK/Criteria/ProductFields'),
     ProductSearchCriteria = require('./SDK/Criteria/ProductSearchCriteria'),
     DefaultModelFactory = require('./SDK/Factory/DefaultModelFactory'),
@@ -29,10 +29,6 @@ var Client = require('./SDK/Client'),
     CategoriesResult = require('./SDK/Model/CategoriesResult'),
     _ = require('underscore');
 
-
-var DEVCENTER_API_URL_STAGE = 'http://devcenter-staging-www1.pub.collins.kg:81/api';
-var DEVCENTER_API_URL_SANDBOX = 'http://devcenter-staging-www1.pub.collins.kg:81/api';
-var DEVCENTER_API_URL_LIVE = 'https://developer.aboutyou.de/api';
 var IMAGE_URL_STAGE = 'http://mndb.staging.aboutyou.de/mmdb/file';
 var IMAGE_URL_SANDBOX = 'http://mndb.sandbox.aboutyou.de/mmdb/file';
 var IMAGE_URL_LIVE = 'http://cdn.aboutyou.de/file';
@@ -45,28 +41,28 @@ var IMAGE_URL_LIVE = 'http://cdn.aboutyou.de/file';
  * @returns {AboutYou} AboutYou instance
  */
 function AboutYou(appId, appPassword, apiEndPoint) {
-    var apiEndPoint = apiEndPoint || "live";
+    apiEndPoint = apiEndPoint || 'live';
 
     if (!(this instanceof AboutYou)) {
         return new AboutYou(appId, appPassword, apiEndPoint);
     }
 
     // constructor code
-    this._client = new Client(appId, appPassword, apiEndPoint);
+    this.client = new Client(appId, appPassword, apiEndPoint);
 
     if (apiEndPoint === 'stage') {
         this.setBaseImageUrl(IMAGE_URL_STAGE);
-        this._environment = 'stage';
+        this.environment = 'stage';
     } else if (apiEndPoint === 'sandbox') {
         this.setBaseImageUrl(IMAGE_URL_SANDBOX);
-        this._environment = 'sandbox';
+        this.environment = 'sandbox';
     } else {
         this.setBaseImageUrl(IMAGE_URL_LIVE);
-        this._environment = 'live';
+        this.environment = 'live';
     }
 
-    this._appId = appId;
-    this._appPassword = appPassword;
+    this.appId = appId;
+    this.appPassword = appPassword;
 }
 
 // public, non-privileged methods.
@@ -76,7 +72,7 @@ AboutYou.prototype = {
      * @returns Client
      */
     getClient: function () {
-        return this._client;
+        return this.client;
     },
 
     /**
@@ -84,22 +80,22 @@ AboutYou.prototype = {
      * @param {string} appPassword  the app password/token for client authentication.
      */
     setAppCredentials: function (appId, appPassword) {
-        this._appId = appId;
-        this._appPassword = appPassword;
+        this.appId = appId;
+        this.appPassword = appPassword;
     },
 
     /**
      * @returns {string}
      */
     getAppId: function () {
-        return this._appId;
+        return this.appId;
     },
 
     /**
      * @returns string
      */
     getApiEndPoint: function () {
-        return this._client.getApiEndPoint();
+        return this.client.getApiEndPoint();
     },
 
     /**
@@ -108,7 +104,7 @@ AboutYou.prototype = {
      *                              an absolute url
      */
     setApiEndpoint: function (apiEndPoint) {
-        this._client.setApiEndpoint(apiEndPoint);
+        this.client.setApiEndpoint(apiEndPoint);
     },
 
     /**
@@ -116,19 +112,19 @@ AboutYou.prototype = {
      */
     setBaseImageUrl: function (baseImageUrl) {
         if (baseImageUrl === null) {
-            this._baseImageUrl = this.IMAGE_URL_LIVE;
+            this.baseImageUrl = this.IMAGE_URL_LIVE;
         } else if (typeof baseImageUrl === 'string') {
-            this._baseImageUrl = helpers.rtrim(baseImageUrl, '/');
+            this.baseImageUrl = helpers.rtrim(baseImageUrl, '/');
         } else {
-            this._baseImageUrl = '';
+            this.baseImageUrl = '';
         }
 
         // we use no factory therefore we set the ImageBaseUrl directly
-        Image.setBaseUrl(this._baseImageUrl);
+        ImageModel.setBaseUrl(this.baseImageUrl);
     },
 
     getQuery: function () {
-        return new Query(this._client, this.getResultFactory());
+        return new Query(this.client, this.getResultFactory());
     },
 
     /**
@@ -148,29 +144,27 @@ AboutYou.prototype = {
      * @param {boolean} fetchIfEmpty
      * @returns DefaultCategoryManager
      */
-    getCategoryManager: function (fetchIfEmpty, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    getCategoryManager: function (fetchIfEmpty) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            categoryManager = this.getResultFactory().getCategoryManager(),
+            query = this.getQuery();
 
-        if (typeof(fetchIfEmpty) == 'function' || !fetchIfEmpty) {
+        if (typeof fetchIfEmpty === 'function' || !fetchIfEmpty) {
             fetchIfEmpty = true;
         }
 
-        var categoryManager = this.getResultFactory().getCategoryManager();
-
         if (fetchIfEmpty && categoryManager.isEmpty()) {
-            var query = this.getQuery();
             query.requireCategoryTree();
-            query.executeSingle().then(function (response) {
+            query.executeSingle().then(function () {
                 defer.resolve(categoryManager);
             }, function (error) {
                 defer.reject(error);
             });
         } else {
-            defer.resolve(categoryManager)
+            defer.resolve(categoryManager);
         }
-
 
         return defer.promise;
     },
@@ -182,10 +176,10 @@ AboutYou.prototype = {
      * @deprecated use the CategoryManager instead of
      * @see AboutYou#getCategoryManager
      */
-    fetchCategoryTree: function (callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchCategoryTree: function () {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback);
 
         this.getCategoryManager(true).then(function (response) {
             var tree = new CategoryTree(response);
@@ -203,25 +197,24 @@ AboutYou.prototype = {
      *
      * @returns ProductsResult
      */
-    fetchProductsByIds: function (ids, fields, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchProductsByIds: function (ids, fields) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
-        if (!fields || (typeof fields == 'function')) {
+        if (!fields || typeof fields === 'function') {
             fields = [];
         }
 
+        // we allow to pass a single ID instead of an array
         if (!(ids instanceof Array)) {
-            if ((typeof(ids) === 'number') || (typeof(ids) === 'string')) {
+            if (typeof ids === 'number' || typeof ids === 'string') {
                 ids = [ids];
             } else {
                 ids = [];
             }
         }
-
-        // we allow to pass a single ID instead of an array TODO
-        var query = this.getQuery();
 
         query.fetchProductsByIds(ids, fields);
         query.executeSingle().then(function (response) {
@@ -231,13 +224,6 @@ AboutYou.prototype = {
         });
 
         return defer.promise;
-
-        /* TODO
-         var productsNotFound = result.getProductsNotFound();
-         if (!empty($productsNotFound) && $this->logger) {
-         $this->logger->warning('products not found: appid=' . $this->appId . ' product ids=[' . join(',', $productsNotFound) . ']');
-         }
-         */
     },
 
     /**
@@ -248,21 +234,28 @@ AboutYou.prototype = {
      *
      * @returns ProductsEansResult
      */
-    fetchProductsByEans: function (eans, fields, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchProductsByEans: function (eans, fields) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
-        if (!fields || (typeof fields == 'function')) {
+        if (!fields || (typeof fields === 'function')) {
             fields = [];
         }
 
         if (!(eans instanceof Array)) {
-            eans = [ids];
+            eans = [eans];
         }
 
-        // we allow to pass a single ID instead of an array TODO
-        var query = this.getQuery();
+        // we allow to pass a single ID instead of an array
+        if (!(eans instanceof Array)) {
+            if (typeof eans === 'number' || typeof eans === 'string') {
+                eans = [eans];
+            } else {
+                eans = [];
+            }
+        }
 
         query.fetchProductsByEans(eans, fields);
         query.executeSingle().then(function (response) {
@@ -272,13 +265,6 @@ AboutYou.prototype = {
         });
 
         return defer.promise;
-
-        /** TODO
-         var productsNotFound = result.getProductsNotFound();
-         if (!empty($productsNotFound) && $this->logger) {
-            $this->logger->warning('products not found: appid=' . $this->appId . ' product ids=[' . join(',', $productsNotFound) . ']');
-        }
-         **/
     },
 
     /**
@@ -293,25 +279,19 @@ AboutYou.prototype = {
      * @deprecated use the CategoryManager instead of
      * @see AboutYou#getCategoryManager
      */
-    fetchCategoriesByIds: function (ids, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchCategoriesByIds: function (ids) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback);
 
         // we allow to pass a single ID instead of an array
         if (ids && !_.isArray(ids)) {
-            var ids = [ids];
+            if (typeof ids === 'number' || typeof ids === 'string') {
+                ids = [ids];
+            } else {
+                ids = [];
+            }
         }
-
-        /* TODO
-         for (id in ids) {
-         if (!is_long($id) && !ctype_digit($id)) {
-         throw new \InvalidArgumentException('A single category ID must be an integer or a numeric string');
-         } else if ($id < 1) {
-         throw new \InvalidArgumentException('A single category ID must be greater than 0');
-         }
-         }
-         */
 
         this.getCategoryManager().then(function (categoryManager) {
             defer.resolve(new CategoriesResult(categoryManager, ids));
@@ -329,12 +309,11 @@ AboutYou.prototype = {
      * @returns VariantsResult
      *
      */
-    fetchVariantsByIds: function (ids, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
-
-        var query = this.getQuery().fetchLiveVariantByIds(ids);
+    fetchVariantsByIds: function (ids) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery().fetchLiveVariantByIds(ids);
 
         query.executeSingle().then(function (response) {
             defer.resolve(response);
@@ -342,12 +321,6 @@ AboutYou.prototype = {
             defer.reject(error);
         });
 
-        /* TODO
-         $variantsNotFound = $result->getVariantsNotFound();
-         if ($result->hasVariantsNotFound() && $this->logger) {
-         $this->logger->warning('variants or products for variants not found: appid=' . $this->appId . ' variant ids=[' . join(',', $variantsNotFound) . ']');
-         }
-         */
         return defer.promise;
     },
 
@@ -357,12 +330,11 @@ AboutYou.prototype = {
      * @returns ProductSearchResult
      *
      */
-    fetchProductSearch: function (criteria, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
-
-        var query = this.getQuery();
+    fetchProductSearch: function (criteria) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
         query.fetchProductSearch(criteria);
 
@@ -386,20 +358,19 @@ AboutYou.prototype = {
      *
      * @returns Autocomplete
      */
-    fetchAutocomplete: function (searchword, limit, types, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchAutocomplete: function (searchword, limit, types) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
-        if (typeof(limit) == 'function' || !limit) {
+        if (typeof limit === 'function' || !limit) {
             limit = 50;
         }
 
-        if (typeof(types) == 'function' || !types) {
+        if (typeof types === 'function' || !types) {
             types = ['products', 'categories'];
         }
-
-        var query = this.getQuery();
 
         query.fetchAutocomplete(searchword, limit, types);
 
@@ -421,12 +392,11 @@ AboutYou.prototype = {
      *
      * @returns {string[]}
      */
-    fetchSuggest: function (searchword, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
-
-        var query = this.getQuery();
+    fetchSuggest: function (searchword) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
         query.fetchSuggest(searchword);
 
@@ -452,7 +422,7 @@ AboutYou.prototype = {
      * @returns string
      */
     getSessionId: function () {
-        return "session_id_yeah";
+        return 'session_id_yeah';
     },
 
     /**
@@ -521,10 +491,11 @@ AboutYou.prototype = {
      * @returns {string} URL to the JavaScript file
      */
     getJavaScriptURL: function () {
+        var url;
         if (this.environment === 'stage') {
-            var url = '//devcenter-staging-www1.pub.collins.kg:81/appjs/' + this._appId + '.js';
+            url = '//devcenter-staging-www1.pub.collins.kg:81/appjs/' + this.appId + '.js';
         } else {
-            var url = '//developer.aboutyou.de/appjs/' + this._appId + '.js';
+            url = '//developer.aboutyou.de/appjs/' + this.appId + '.js';
         }
 
         return url;
@@ -538,26 +509,25 @@ AboutYou.prototype = {
     initDefaultFactory: function (cache) {
         cache = cache || null;
 
-        var categoryManager = new DefaultCategoryManager(cache, this._appId);
-        var facetManager = new DefaultFacetManager(cache, this._appId);
+        var categoryManager = new DefaultCategoryManager(cache, this.appId),
+            facetManager = new DefaultFacetManager(cache, this.appId),
+            resultFactory = new DefaultModelFactory(
+                this,
+                facetManager,
+                categoryManager
+            );
 
-        var resultFactory = new DefaultModelFactory(
-            this,
-            facetManager,
-            categoryManager
-        );
-
-        // TODO resultFactory.setBaseImageUrl(this._baseImageUrl);
+        resultFactory.setBaseImageUrl(this.baseImageUrl);
 
         this.setResultFactory(resultFactory);
     },
 
-    fetchFacet: function (params, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
+    fetchFacet: function (params) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            query = this.getQuery();
 
-        var query = this.getQuery();
         query.fetchFacet(params);
         query.executeSingle().then(function (result) {
             defer.resolve(result);
@@ -576,17 +546,16 @@ AboutYou.prototype = {
      * @returns {Facet[]} With facet id as key.
      *
      */
-    fetchFacets: function (groupIds, callback) {
-        var args = [].slice.call(arguments);
-        var callback = typeof args[args.length - 1] == 'function' && args.pop();
-        var defer = helpers.createDeferred(callback);
-
-        var facetManager = this.getResultFactory().getFacetManager();
+    fetchFacets: function (groupIds) {
+        var args = [].slice.call(arguments),
+            callback = typeof args[args.length - 1] === 'function' && args.pop(),
+            defer = helpers.createDeferred(callback),
+            facetManager = this.getResultFactory().getFacetManager(),
+            query = this.getQuery();
 
         if (facetManager.isEmpty()) {
-            var query = this.getQuery();
             query.fetchFacets(groupIds);
-            query.executeSingle().then(function (results) {
+            query.executeSingle().then(function () {
                 defer.resolve(facetManager.getFacetsByGroupId(groupIds));
             }, function (error) {
                 defer.reject(error);
@@ -607,11 +576,6 @@ AboutYou.prototype = {
 Object.defineProperty(AboutYou.prototype, 'javaScriptTag', {
     get: AboutYou.prototype.getJavaScriptURL
 });
-
-Object.defineProperty(AboutYou.prototype, 'appId', {
-    get: AboutYou.prototype.getAppId
-});
-
 
 Object.defineProperty(AboutYou.prototype, 'productFields', {
     get: AboutYou.prototype.getProductFields

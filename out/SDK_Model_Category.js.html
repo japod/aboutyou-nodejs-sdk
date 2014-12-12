@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/Model/Category.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/Model/Category.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var _ = require('underscore');
+
+Category.ALL = false;
+Category.ACTIVE_ONLY = true;
+
+/**
+ * @constructor
+ * @returns {Category}
+ */
+function Category() {
+    this.productCount = 0;
+}
+
+/**
+ * @static
+ * @param {Object} jsonObject  json as object tree
+ * @param CategoryManagerInterface categoryManager
+ *
+ * @return {Category}
+ */
+Category.createFromJson = function (jsonObject, categoryManager) {
+    var category = new Category();
+
+    category._categoryManager = categoryManager;
+    category.parentId = jsonObject.parent;
+    category.id = jsonObject.id;
+    category.name = jsonObject.name;
+    category.active = jsonObject.active;
+    category.position = jsonObject.position;
+
+    return category;
+}
+
+/**
+ * @returns {number}
+ */
+Category.prototype.getId = function () {
+    return this.id;
+}
+
+/**
+ * @returns {boolean}
+ */
+Category.prototype.isActive = function () {
+    return this.active ? true : false;
+}
+
+/**
+ * @returns {boolean}
+ */
+Category.prototype.isPathActive = function () {
+    var parent = this.getParent();
+
+    return this.isActive() &amp;&amp; (parent === null || parent.isPathActive());
+}
+
+/**
+ * @returns {string}
+ */
+Category.prototype.getName = function () {
+    return this.name;
+}
+
+/**
+ * @returns {number}
+ */
+Category.prototype.getParentId = function () {
+    return this.parentId;
+}
+
+/**
+ * @returns {number}
+ */
+Category.prototype.getPosition = function () {
+    return this.position;
+}
+
+/**
+ * @param {number} productCount
+ */
+Category.prototype.setProductCount = function (productCount) {
+    this.productCount = productCount;
+}
+
+/**
+ * @returns {number}
+ */
+Category.prototype.getProductCount = function () {
+    return this.productCount;
+}
+
+/**
+ * @returns {Category|null}
+ */
+Category.prototype.getParent = function () {
+    if (!this.getParentId()) {
+        return null;
+    }
+    return this._categoryManager.getCategory(this.getParentId());
+}
+
+/**
+ * @param {boolean} activeOnly
+ *
+ * @returns {Category[]}
+ */
+Category.prototype.getSubcategories = function (activeOnly) {
+    activeOnly = activeOnly || Category.ACTIVE_ONLY;
+
+    var subcategories = this._categoryManager.getSubcategories(this.getId());
+
+    if (activeOnly === Category.ALL) {
+        return subcategories;
+    }
+
+    return _.filter(subcategories, function (subCategory) {
+        return subCategory.isActive();
+    });
+}
+
+/**
+ * @returns {Category[]}
+ */
+Category.prototype.getBreadCrumb = function () {
+    var breadcrumb = this.getParent() ? this.getParent().getBreadcrumb() : [];
+    breadcrumb.push(this);
+    return breadcrumb;
+}
+
+/**
+ * @param {number} productCount
+ */
+Category.prototype.setProductCount = function (count) {
+    this.productCount = parseInt(count);
+}
+
+/**
+ * @returns {number} productCount
+ */
+Category.prototype.getProductCount = function () {
+    return this.productCount;
+}
+
+// dot access
+Object.defineProperty(Category.prototype, 'parent', {
+    get: Category.prototype.getParent
+});
+
+Object.defineProperty(Category.prototype, 'subcategories', {
+    get: Category.prototype.getSubcategories
+});
+
+Object.defineProperty(Category.prototype, 'breadcrumb', {
+    get: Category.prototype.getBreadCrumb
+});
+
+module.exports = Category;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="_.html">_</a></li><li><a href="AboutYou.html">AboutYou</a></li><li><a href="Autocomplete.html">Autocomplete</a></li><li><a href="CategoriesResult.html">CategoriesResult</a></li><li><a href="Category.html">Category</a></li><li><a href="CategoryManager.html">CategoryManager</a></li><li><a href="CategoryTree.html">CategoryTree</a></li><li><a href="Client.html">Client</a></li><li><a href="DefaultFacetManager.html">DefaultFacetManager</a></li><li><a href="DefaultModelFactory.html">DefaultModelFactory</a></li><li><a href="Facet.html">Facet</a></li><li><a href="FacetCount.html">FacetCount</a></li><li><a href="FacetCounts.html">FacetCounts</a></li><li><a href="FacetGroup.html">FacetGroup</a></li><li><a href="FacetGroupSet.html">FacetGroupSet</a></li><li><a href="Image.html">Image</a></li><li><a href="ImageSize.html">ImageSize</a></li><li><a href="Product.html">Product</a></li><li><a href="ProductsEansResult.html">ProductsEansResult</a></li><li><a href="ProductSearchResult.html">ProductSearchResult</a></li><li><a href="ProductsResult.html">ProductsResult</a></li><li><a href="Query.html">Query</a></li><li><a href="SaleCounts.html">SaleCounts</a></li><li><a href="Variant.html">Variant</a></li><li><a href="VariantsResult.html">VariantsResult</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Fri Dec 12 2014 16:35:01 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
