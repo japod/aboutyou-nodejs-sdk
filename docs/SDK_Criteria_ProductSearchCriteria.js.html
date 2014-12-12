@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SDK/Criteria/ProductSearchCriteria.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SDK/Criteria/ProductSearchCriteria.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+var _ = require('underscore');
+
+var ProductFields = require('./ProductFields');
+
+/**
+ * @author patrick.michelberger@aboutyou.de
+ * (c) ABOUT YOU GmbH
+ */
+
+/*
+ * id and name is set per default
+ */
+ProductSearchCriteria.SORT_TYPE_RELEVANCE   = 'relevance';
+ProductSearchCriteria.SORT_TYPE_UPDATED     = 'updated_date';
+ProductSearchCriteria.SORT_TYPE_CREATED     = 'created_date';
+ProductSearchCriteria.SORT_TYPE_MOST_VIEWED = 'most_viewed';
+ProductSearchCriteria.SORT_TYPE_PRICE       = 'price';
+
+ProductSearchCriteria.SORT_ASC  = 'asc';
+ProductSearchCriteria.SORT_DESC = 'desc';
+
+ProductSearchCriteria.FACETS_ALL = '_all';
+ProductSearchCriteria.FACETS_UNLIMITED = -1;
+
+ProductSearchCriteria.FILTER_SALE          = 'sale';
+ProductSearchCriteria.FILTER_CATEGORY_IDS  = 'categories';
+ProductSearchCriteria.FILTER_PRICE         = 'prices';
+ProductSearchCriteria.FILTER_SEARCHWORD    = 'searchword';
+ProductSearchCriteria.FILTER_ATTRIBUTES    = 'facets';
+
+function ProductSearchCriteria(sessionId) {
+    this._sessionId = sessionId;
+    this._result = {};
+    this._filter = {};
+
+    return this;
+};
+
+ProductSearchCriteria.create = function(sessionId) {
+   return new ProductSearchCriteria(sessionId);
+};
+
+ProductSearchCriteria.prototype = {
+    filterBy: function (key, value) {
+        this._filter[key] = value;
+        return this;
+    },
+
+    getFilter: function (key) {
+        return this._filter[key] || null;
+    },
+
+    filterBySale: function (sale) {
+        if (typeof sale !== 'boolean') {
+            sale = null;
+        }
+
+        this.filterBy(ProductSearchCriteria.FILTER_SALE, sale);
+        return this;
+    },
+
+    getSaleFilter: function () {
+        return this.getFilter(ProductSearchCriteria.FILTER_SALE);
+    },
+
+    filterBySearchword: function (searchword) {
+        this.filterBy(ProductSearchCriteria.FILTER_SEARCHWORD, searchword);
+    },
+
+    getSearchwordFilter: function () {
+        return this.getFilter(ProductSearchCriteria.FILTER_SEARCHWORD);
+    },
+
+    filterByCategoryIds: function (categoryIds, append) {
+        if ((!categoryIds instanceof Array)) {
+            categoryIds = [categoryIds];
+        }
+
+        var filter = [];
+
+        if (append) {
+            filter = this.getFilter(this.FILTER_CATEGORY_IDS) || [];
+        }
+
+        filter = _.uniq(filter.concat(categoryIds));
+
+        this.filterBy(this.FILTER_CATEGORY_IDS, filter);
+    },
+
+    getCategoryFilter: function() {
+        return this.getFilter(this.FILTER_CATEGORY_IDS);
+    },
+
+    filterByFacetIds: function(attributes, append) {
+        var filter = {};
+
+        if (append) {
+            filter = this.getFilter(this.FILTER_ATTRIBUTES)  || {};
+        }
+
+        for (var groupId in attributes) {
+            var facetIds = attributes[groupId];
+
+            if (filter[groupId] &amp;&amp; append) {
+                filter[groupId] = _.uniq(filter[groupId].concat(facetIds));
+            } else {
+                filter[groupId] = facetIds;
+            }
+        }
+
+        this.filterBy(this.FILTER_ATTRIBUTES, filter);
+    },
+
+    getFacetFilter: function() {
+        return this.getFilter(this.FILTER_ATTRIBUTES);
+    },
+
+    filterByFacetGroup: function (facetGroup, append) {
+        return this.filterByFacetIds(facetGroup.ids, append);
+    },
+
+    filterByFacetGroupSet: function (facetGroupSet, $append)
+    {
+        return this.filterByFacetIds(facetGroupSet.ids, append);
+    },
+
+    filterByPriceRange: function (from, to) {
+        from = parseInt(from);
+        to = parseInt(to);
+
+        var price = {};
+        if (from > 0) {
+            price.from = from;
+        }
+
+        if (to > 0) {
+            price.to = to;
+        }
+
+        return this.filterBy(this.FILTER_PRICE, price);
+    },
+
+    getPriceRangeFilter: function () {
+        return this.getFilter(this.FILTER_PRICE);
+    },
+
+    sortBy: function (type, direction) {
+        if (!direction) {
+            direction = this.SORT_ASC;
+        }
+
+        this._result['sort'] = {
+            'by': type,
+            'direction': direction
+        };
+
+        return this;
+    },
+
+    setLimit: function (limit, offset) {
+        limit = limit ? parseInt(limit) : 200;
+        limit = Math.min(limit, 0);
+        limit = Math.max(limit, 200);
+
+        offset = offset ? parseInt(offset) : 0;
+        offset = Math.max(offset, 0);
+
+        this._result['limit'] = limit;
+        this._result['offset'] = offset;
+
+        return this;
+    },
+
+    selectSales: function(enable) {
+        if (enable) {
+            this._result['sales'] = true;
+        } else if (this._result['sales']) {
+            delete this._result['sales'];
+        }
+
+        return this;
+    },
+
+    selectPriceRanges: function(enable) {
+        if (enable) {
+            this._result['price'] = true;
+        } else if (this._result['price']) {
+            delete this._result['price'];
+        }
+
+        return this;
+    },
+
+    selectFacetsByGroupId: function (groupId, limit) {
+        if (!this._result['facets']) {
+            this._result['facets'] = {};
+        }
+
+        if (!this._result['facets'][groupId]) {
+            this._result['facets'][groupId] = {
+                'limit': limit
+            };
+        }
+
+        return this;
+    },
+
+    selectFacetsByFacetGroup: function (group, limit) {
+        return this.selectFacetsByGroupId(group.groupId, limit);
+    },
+
+    selectAllFacets: function (limit) {
+
+        this._result['facets'] = {};
+        this._result['facets'][this.FACETS_ALL] = {
+            'limit': limit
+        }
+    },
+
+    selectCategories: function (enable) {
+        if (enable) {
+            this._result['categories'] = true;
+        } else if (this._result['categories']) {
+            delete this._result['categories'];
+        }
+
+        return this;
+    },
+
+    boostProducts: function (ids) {
+        if (!(ids instanceof Array)) {
+            ids = [ids];
+        }
+
+        for (var i=0; i&lt;ids.length; i++) {
+            if (typeof ids[i] === 'Product') {
+                ids[i] = ids[i].id;
+            }
+        }
+
+        ids = _.uniq(ids);
+        this._result['boosts'] = ids;
+
+        return this;
+    },
+
+    selectProductFields: function (fields) {
+        this._result['fields'] = ProductFields.filterFields(fields);
+        return this;
+    },
+
+    setSessionId: function (sessionId) {
+        this._sessionId = sessionId;
+        return this;
+    },
+
+    getSessionId: function () {
+        return this._sessionId;
+    },
+
+    toArray: function() {
+        var params = {
+            'session_id': this.getSessionId()
+        };
+
+        if (this._result) {
+            params.result = this._result;
+        }
+
+        if (this._filter) {
+            params.filter = this._filter;
+        }
+
+        return params;
+    }
+};
+
+module.exports = ProductSearchCriteria;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="AboutYou.html">AboutYou</a></li><li><a href="global.html#Autocomplete">Autocomplete</a></li><li><a href="Client.html">Client</a></li><li><a href="Query.html">Query</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_">_</a></li><li><a href="global.html#Category">Category</a></li><li><a href="global.html#Facet">Facet</a></li><li><a href="global.html#hasOwn">hasOwn</a></li><li><a href="global.html#Image">Image</a></li><li><a href="global.html#ImageSize">ImageSize</a></li><li><a href="global.html#Product">Product</a></li><li><a href="global.html#Suggest">Suggest</a></li><li><a href="global.html#Variant">Variant</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha10</a> on Wed Nov 12 2014 14:35:52 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
