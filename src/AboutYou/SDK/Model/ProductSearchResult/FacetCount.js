@@ -11,42 +11,42 @@ function FacetCount(facet, count) {
 /**
  * @returns {Facet}
  */
-FacetCount.prototype.getFacet = function() {
+FacetCount.prototype.getFacet = function () {
     return this.facet;
 };
 
 /**
  * @returns {number}
  */
-FacetCount.prototype.getProductCount = function() {
+FacetCount.prototype.getProductCount = function () {
     return this.count;
 }
 
 /**
  * @returns {number}
  */
-FacetCount.prototype.getId = function() {
+FacetCount.prototype.getId = function () {
     return this.facet.Id();
 }
 
 /**
  * @returns {string}
  */
-FacetCount.prototype.getName = function() {
+FacetCount.prototype.getName = function () {
     return this.facet.name;
 }
 
 /**
  * @returns {number}
  */
-FacetCount.prototype.getGroupId = function() {
+FacetCount.prototype.getGroupId = function () {
     return this.facet.groupId();
 }
 
 /**
  * @returns {string}
  */
-FacetCount.getGroupName = function() {
+FacetCount.getGroupName = function () {
     return this.facet.groupName;
 }
 

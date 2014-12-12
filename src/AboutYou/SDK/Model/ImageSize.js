@@ -14,14 +14,14 @@ function ImageSize(width, height) {
 /**
  * @returns {number}
  */
-ImageSize.prototype.getWidth = function() {
+ImageSize.prototype.getWidth = function () {
     this.width;
 }
 
 /**
  * @returns {number}
  */
-ImageSize.prototype.getHeight = function() {
+ImageSize.prototype.getHeight = function () {
     this.height;
 }
 

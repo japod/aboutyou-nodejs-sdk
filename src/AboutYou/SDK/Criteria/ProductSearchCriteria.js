@@ -7,23 +7,23 @@ var ProductFields = require('./ProductFields');
 /*
  * id and name is set per default
  */
-ProductSearchCriteria.SORT_TYPE_RELEVANCE   = 'relevance';
-ProductSearchCriteria.SORT_TYPE_UPDATED     = 'updated_date';
-ProductSearchCriteria.SORT_TYPE_CREATED     = 'created_date';
+ProductSearchCriteria.SORT_TYPE_RELEVANCE = 'relevance';
+ProductSearchCriteria.SORT_TYPE_UPDATED = 'updated_date';
+ProductSearchCriteria.SORT_TYPE_CREATED = 'created_date';
 ProductSearchCriteria.SORT_TYPE_MOST_VIEWED = 'most_viewed';
-ProductSearchCriteria.SORT_TYPE_PRICE       = 'price';
+ProductSearchCriteria.SORT_TYPE_PRICE = 'price';
 
-ProductSearchCriteria.SORT_ASC  = 'asc';
+ProductSearchCriteria.SORT_ASC = 'asc';
 ProductSearchCriteria.SORT_DESC = 'desc';
 
 ProductSearchCriteria.FACETS_ALL = '_all';
 ProductSearchCriteria.FACETS_UNLIMITED = -1;
 
-ProductSearchCriteria.FILTER_SALE          = 'sale';
-ProductSearchCriteria.FILTER_CATEGORY_IDS  = 'categories';
-ProductSearchCriteria.FILTER_PRICE         = 'prices';
-ProductSearchCriteria.FILTER_SEARCHWORD    = 'searchword';
-ProductSearchCriteria.FILTER_ATTRIBUTES    = 'facets';
+ProductSearchCriteria.FILTER_SALE = 'sale';
+ProductSearchCriteria.FILTER_CATEGORY_IDS = 'categories';
+ProductSearchCriteria.FILTER_PRICE = 'prices';
+ProductSearchCriteria.FILTER_SEARCHWORD = 'searchword';
+ProductSearchCriteria.FILTER_ATTRIBUTES = 'facets';
 
 function ProductSearchCriteria(sessionId) {
     this._sessionId = sessionId;
@@ -33,8 +33,8 @@ function ProductSearchCriteria(sessionId) {
     return this;
 };
 
-ProductSearchCriteria.create = function(sessionId) {
-   return new ProductSearchCriteria(sessionId);
+ProductSearchCriteria.create = function (sessionId) {
+    return new ProductSearchCriteria(sessionId);
 };
 
 ProductSearchCriteria.prototype = {
@@ -86,15 +86,15 @@ ProductSearchCriteria.prototype = {
         return this;
     },
 
-    getCategoryFilter: function() {
+    getCategoryFilter: function () {
         return this.getFilter(ProductSearchCriteria.FILTER_CATEGORY_IDS);
     },
 
-    filterByFacetIds: function(attributes, append) {
+    filterByFacetIds: function (attributes, append) {
         var filter = {};
 
         if (append) {
-            filter = this.getFilter(ProductSearchCriteria.FILTER_ATTRIBUTES)  || {};
+            filter = this.getFilter(ProductSearchCriteria.FILTER_ATTRIBUTES) || {};
         }
 
         for (var groupId in attributes) {
@@ -110,7 +110,7 @@ ProductSearchCriteria.prototype = {
         return this.filterBy(ProductSearchCriteria.FILTER_ATTRIBUTES, filter);
     },
 
-    getFacetFilter: function() {
+    getFacetFilter: function () {
         return this.getFilter(ProductSearchCriteria.FILTER_ATTRIBUTES);
     },
 
@@ -118,8 +118,7 @@ ProductSearchCriteria.prototype = {
         return this.filterByFacetIds(facetGroup.ids, append);
     },
 
-    filterByFacetGroupSet: function (facetGroupSet, $append)
-    {
+    filterByFacetGroupSet: function (facetGroupSet, $append) {
         return this.filterByFacetIds(facetGroupSet.ids, append);
     },
 
@@ -169,8 +168,8 @@ ProductSearchCriteria.prototype = {
         return this;
     },
 
-    selectSales: function(enable) {
-        if(typeof(enable) === 'undefined') {
+    selectSales: function (enable) {
+        if (typeof(enable) === 'undefined') {
             enable = true;
         }
 
@@ -183,8 +182,8 @@ ProductSearchCriteria.prototype = {
         return this;
     },
 
-    selectPriceRanges: function(enable) {
-        if(typeof(enable) === 'undefined') {
+    selectPriceRanges: function (enable) {
+        if (typeof(enable) === 'undefined') {
             enable = true;
         }
 
@@ -240,7 +239,7 @@ ProductSearchCriteria.prototype = {
             ids = [ids];
         }
 
-        for (var i=0; i<ids.length; i++) {
+        for (var i = 0; i < ids.length; i++) {
             if (typeof ids[i] === 'Product') {
                 ids[i] = ids[i].id;
             }
@@ -266,7 +265,7 @@ ProductSearchCriteria.prototype = {
         return this._sessionId;
     },
 
-    requiresCategories: function() {
+    requiresCategories: function () {
         var productCategories =
             this._result['fields'] && ProductFields.requiresCategories(this._result['fields']);
 
@@ -275,14 +274,14 @@ ProductSearchCriteria.prototype = {
         return productCategories || categoryFacets;
     },
 
-    requiresFacets: function() {
+    requiresFacets: function () {
         var productFacets = this._result['fields'] && ProductFields.requiresFacets(this._result['fields']);
         var facetFacets = !_.isEmpty(this._result['facets']);
 
         return productFacets || facetFacets;
     },
 
-    toArray: function() {
+    toArray: function () {
         var params = {
             'session_id': this.getSessionId()
         };

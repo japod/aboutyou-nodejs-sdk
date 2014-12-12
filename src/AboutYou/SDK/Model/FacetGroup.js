@@ -17,15 +17,15 @@ function FacetGroup(id, name) {
 /**
  * @param {Facet} facet
  */
-FacetGroup.prototype.addFacet = function(facet) {
+FacetGroup.prototype.addFacet = function (facet) {
     this.facets.push(facet);
 };
 
 /**
  * @param {Facet[]} facet
  */
-FacetGroup.prototype.addFacets = function(facets) {
-    for(var facet in facets) {
+FacetGroup.prototype.addFacets = function (facets) {
+    for (var facet in facets) {
         this.addFacet(facet);
     }
 };
@@ -33,21 +33,21 @@ FacetGroup.prototype.addFacets = function(facets) {
 /**
  * @returns {number}
  */
-FacetGroup.prototype.getId = function() {
+FacetGroup.prototype.getId = function () {
     return this.id;
 };
 
 /**
  * @returns {number}
  */
-FacetGroup.prototype.getGroupId = function() {
+FacetGroup.prototype.getGroupId = function () {
     return this.id;
 };
 
 /**
  * @returns {string}
  */
-FacetGroup.prototype.getName = function() {
+FacetGroup.prototype.getName = function () {
     return this.name;
 };
 
@@ -59,10 +59,10 @@ FacetGroup.prototype.getName = function() {
  *
  * @returns {string}
  */
-FacetGroup.prototype.getFacetNames = function(separator) {
-    separator = separator ||  '/';
+FacetGroup.prototype.getFacetNames = function (separator) {
+    separator = separator || '/';
     var names = [];
-    for(var facet in this.facets) {
+    for (var facet in this.facets) {
         names.push(facet.getName());
     }
     return names.join(separator);
@@ -71,7 +71,7 @@ FacetGroup.prototype.getFacetNames = function(separator) {
 /**
  * @returns {Facet[]}
  */
-FacetGroup.prototype.getFacets = function() {
+FacetGroup.prototype.getFacets = function () {
     return this.facets;
 };
 
@@ -82,7 +82,7 @@ FacetGroup.prototype.getFacets = function() {
  *
  * @returns {boolean}
  */
-FacetGroup.prototype.isEqual = function(facetGroup) {
+FacetGroup.prototype.isEqual = function (facetGroup) {
     if (this.id !== facetGroup.id) {
         return false;
     }
@@ -94,7 +94,7 @@ FacetGroup.prototype.isEqual = function(facetGroup) {
  *
  * @returns {string}
  */
-FacetGroup.prototype.getUniqueKey = function() {
+FacetGroup.prototype.getUniqueKey = function () {
     var facetIds = _.keys(this.facets);
     facetIds.sort();
     return this.id + ':' + facetIds.join(',');
@@ -104,7 +104,7 @@ FacetGroup.prototype.getUniqueKey = function() {
  *
  * @returns {string[]} ids
  */
-FacetGroup.prototype.getIds = function() {
+FacetGroup.prototype.getIds = function () {
     var result = {};
     result[this.id] = _.keys(this.facets);
     return result;
@@ -114,8 +114,8 @@ FacetGroup.prototype.getIds = function() {
  * @param
  * @returns {string[]} ids
  */
-FacetGroup.prototype.contains = function(facet) {
-    if(this.facets[facet.getId()]) {
+FacetGroup.prototype.contains = function (facet) {
+    if (this.facets[facet.getId()]) {
         return true;
     }
     return false;

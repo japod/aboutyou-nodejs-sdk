@@ -17,7 +17,7 @@ util.inherits(FacetCounts, TermsCounts);
  *
  * @return {FacetCounts}
  */
-FacetCounts.createFromJson = function(groupId, jsonObject, counts) {
+FacetCounts.createFromJson = function (groupId, jsonObject, counts) {
 
     var facetCounts = new FacetCounts(jsonObject.total, jsonObject.other, jsonObject.missing);
 
@@ -28,11 +28,11 @@ FacetCounts.createFromJson = function(groupId, jsonObject, counts) {
     return facetCounts;
 };
 
-FacetCounts.prototype.getGroupId = function() {
+FacetCounts.prototype.getGroupId = function () {
     return this.groupId;
 };
 
-FacetCounts.prototype.getFacetCounts = function() {
+FacetCounts.prototype.getFacetCounts = function () {
     return this.facetCounts;
 };
 

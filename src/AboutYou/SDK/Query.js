@@ -7,19 +7,19 @@ var _ = require('underscore');
 var ProductFields = require('./Criteria/ProductFields');
 
 var mapping = {
-    'autocompletion' : 'createAutocomplete',
-    'basket'         : 'createBasket',
-    'category'       : 'createCategoriesResult',
-    'facet'          : 'createFacetList',
-    'facet_types'    : 'createFacetTypes',
-    'products'       : 'createProductsResult',
-    'products_eans'  : 'createProductsEansResult',
-    'product_search' : 'createProductSearchResult',
-    'suggest'        : 'createSuggest',
-    'get_order'      : 'createOrder',
-    'initiate_order' : 'initiateOrder',
-    'child_apps'     : 'createChildApps',
-    'live_variant'   : 'createVariantsResult'
+    'autocompletion': 'createAutocomplete',
+    'basket': 'createBasket',
+    'category': 'createCategoriesResult',
+    'facet': 'createFacetList',
+    'facet_types': 'createFacetTypes',
+    'products': 'createProductsResult',
+    'products_eans': 'createProductsEansResult',
+    'product_search': 'createProductSearchResult',
+    'suggest': 'createSuggest',
+    'get_order': 'createOrder',
+    'initiate_order': 'initiateOrder',
+    'child_apps': 'createChildApps',
+    'live_variant': 'createVariantsResult'
 };
 
 Query.QUERY_TREE = 'category_tree';
@@ -48,12 +48,12 @@ Query.prototype = {
      *
      * @returns {Object[]} request results
      */
-    execute: function() {
+    execute: function () {
         var that = this;
         var defer = when.defer();
         var isMultiRequest = (that._query.length > 1);
 
-        if(_.isEmpty(this._query) &&  _.isEmpty(this._ghostQuery)) {
+        if (_.isEmpty(this._query) && _.isEmpty(this._ghostQuery)) {
             return [];
         }
 
@@ -61,11 +61,11 @@ Query.prototype = {
 
         var queryString = this.getQueryString();
 
-        this._client.request(queryString).then(function(response) {
+        this._client.request(queryString).then(function (response) {
             var jsonResponse = JSON.parse(response.body);
             var results = that.parseResult(jsonResponse, isMultiRequest);
             defer.resolve(results);
-        }, function(error) {
+        }, function (error) {
             // deal with an error
             defer.reject(error);
         });
@@ -78,13 +78,13 @@ Query.prototype = {
      *
      * @returns {Object} first result of the current query
      */
-    executeSingle: function() {
+    executeSingle: function () {
 
         var defer = when.defer();
 
-        this.execute().then(function(response) {
+        this.execute().then(function (response) {
             defer.resolve(response[0]);
-        }, function(error) {
+        }, function (error) {
             defer.reject(error);
         });
 
@@ -98,8 +98,8 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchProductsByIds: function(ids, fields) {
-        ids = ids.map(function(id) {
+    fetchProductsByIds: function (ids, fields) {
+        ids = ids.map(function (id) {
             return parseInt(id);
         });
 
@@ -107,17 +107,17 @@ Query.prototype = {
         ids = _.values(ids);
 
         this._query.push({
-            'products' : {
-                'ids' : ids,
-                'fields' : ProductFields.filterFields(fields)
+            'products': {
+                'ids': ids,
+                'fields': ProductFields.filterFields(fields)
             }
         });
 
-        if(ProductFields.requiresCategories(fields)) {
+        if (ProductFields.requiresCategories(fields)) {
             this.requireCategoryTree();
         }
 
-        if(ProductFields.requiresFacets(fields)) {
+        if (ProductFields.requiresFacets(fields)) {
             this.requireFacets();
         }
 
@@ -130,22 +130,22 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchProductsByEans: function(eans, fields) {
+    fetchProductsByEans: function (eans, fields) {
         // make sure the keys are correct to avoid creating an json array instead of object
         eans = _.values(eans);
 
         this._query.push({
-            'products_eans' : {
-                'eans' : eans,
-                'fields' : ProductFields.filterFields(fields)
+            'products_eans': {
+                'eans': eans,
+                'fields': ProductFields.filterFields(fields)
             }
         });
 
-        if(ProductFields.requiresCategories(fields)) {
+        if (ProductFields.requiresCategories(fields)) {
             this.requireCategoryTree();
         }
 
-        if(ProductFields.requiresFacets(fields)) {
+        if (ProductFields.requiresFacets(fields)) {
             this.requireFacets();
         }
 
@@ -157,10 +157,12 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchProductSearch: function(criteria) {
-        this._query = [{
-            'product_search': criteria.toArray()
-        }];
+    fetchProductSearch: function (criteria) {
+        this._query = [
+            {
+                'product_search': criteria.toArray()
+            }
+        ];
 
         if (criteria.requiresCategories()) {
             this.requireCategoryTree();
@@ -175,29 +177,29 @@ Query.prototype = {
      * @param {boolean} fetchIfEmpty | default: false
      * @returns {Query}
      */
-    requireCategoryTree: function(fetchForced) {
+    requireCategoryTree: function (fetchForced) {
         fetchForced = fetchForced || false;
         if (!(fetchForced || this.factory.getCategoryManager().isEmpty())) {
             return this;
         }
 
         this._ghostQuery[Query.QUERY_TREE] = {
-            'category_tree' : {
-                'version' : '2'
+            'category_tree': {
+                'version': '2'
             }
         };
 
         return this;
     },
 
-    requireFacets: function(fetchForced) {
+    requireFacets: function (fetchForced) {
         fetchForced = fetchForced || false;
         if (!(fetchForced || this.factory.getFacetManager().isEmpty())) {
             return this;
         }
 
         this._ghostQuery[Query.QUERY_FACETS] = {
-            'facets' : {}
+            'facets': {}
         };
 
         return this;
@@ -211,12 +213,14 @@ Query.prototype = {
      *
      * @deprecated use Query#requireCategoryTree and the CategoryManager instead of
      */
-    fetchCategoryTree: function() {
-        this._query = [{
-            'category_tree' : {
-                'version' : '2'
+    fetchCategoryTree: function () {
+        this._query = [
+            {
+                'category_tree': {
+                    'version': '2'
+                }
             }
-        }];
+        ];
         return this;
     },
 
@@ -227,7 +231,7 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchAutocomplete: function(searchword, limit, types) {
+    fetchAutocomplete: function (searchword, limit, types) {
         searchword = String(searchword);
         // TODO searchword = unescape(encodeURIComponent(searchword));
         searchword = searchword.toLowerCase();
@@ -243,9 +247,11 @@ Query.prototype = {
             options.types = types;
         }
 
-        this._query = [{
-            'autocompletion' : options
-        }];
+        this._query = [
+            {
+                'autocompletion': options
+            }
+        ];
 
         return this;
     },
@@ -255,18 +261,20 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchSuggest: function(searchword) {
-        this._query = [{
-            'suggest' : {
-                'searchword': searchword
+    fetchSuggest: function (searchword) {
+        this._query = [
+            {
+                'suggest': {
+                    'searchword': searchword
+                }
             }
-        }];
+        ];
     },
 
     /**
      * @return string
      */
-    getQueryString: function() {
+    getQueryString: function () {
         return JSON.stringify(this._allQuery);
     },
 
@@ -275,30 +283,30 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchCategoriesByIds: function(ids) {
+    fetchCategoriesByIds: function (ids) {
         var ids = ids || null;
         if (ids === null) {
             this._query.push({
-                'category' : null
+                'category': null
             });
         } else {
             /*
-            foreach ($ids as $id) {
-                if (!is_long($id) && !ctype_digit($id)) {
-                    throw new \InvalidArgumentException('A single category ID must be an integer or a numeric string');
-                } else if ($id < 1) {
-                    throw new \InvalidArgumentException('A single category ID must be greater than 0');
-                }
-            }
-            */
+             foreach ($ids as $id) {
+             if (!is_long($id) && !ctype_digit($id)) {
+             throw new \InvalidArgumentException('A single category ID must be an integer or a numeric string');
+             } else if ($id < 1) {
+             throw new \InvalidArgumentException('A single category ID must be greater than 0');
+             }
+             }
+             */
 
             ids = ids.map(parseInt);
 
             ids = _.values(ids);
 
             this._query.push({
-                'category' : {
-                    'ids' : ids
+                'category': {
+                    'ids': ids
                 }
             });
         }
@@ -310,14 +318,14 @@ Query.prototype = {
      *
      * @returns {Query}
      */
-    fetchLiveVariantByIds: function(ids) {
-        ids = ids.map(function(id) {
-            return parseInt(id,10);
+    fetchLiveVariantByIds: function (ids) {
+        ids = ids.map(function (id) {
+            return parseInt(id, 10);
         });
         ids = _.values(ids);
 
         this._query.push({
-            'live_variant' : {'ids' : ids}
+            'live_variant': {'ids': ids}
         });
 
         return this;
@@ -329,7 +337,7 @@ Query.prototype = {
      * @returns {Query}
      *
      */
-    fetchFacet: function(params) {
+    fetchFacet: function (params) {
         if (params && params.length < 1) {
             // TODO throw new \InvalidArgumentException('no params given');
             return null;
@@ -348,13 +356,13 @@ Query.prototype = {
      * @returns {Query}
      *
      */
-    fetchFacets: function(groupIds) {
+    fetchFacets: function (groupIds) {
         groupIds = groupIds || [];
         groupIds = groupIds.map(parseInt);
 
         this._query.push({
-            'facets' : {
-                'group_ids' : groupIds
+            'facets': {
+                'group_ids': groupIds
             }
         });
         return this;
@@ -370,7 +378,7 @@ Query.prototype = {
      * @returns {Object[]}
      *
      */
-    parseResult: function(jsonResponse, isMultiRequest) {
+    parseResult: function (jsonResponse, isMultiRequest) {
         isMultiRequest = isMultiRequest || true;
 
         // TODO $this->checkResponse($jsonResponse);
@@ -378,11 +386,11 @@ Query.prototype = {
         var results = [];
         var queryKeys = [];
 
-        for(var query in this._allQuery) {
+        for (var query in this._allQuery) {
             queryKeys.push(_.keys(this._allQuery[query])[0]);
         }
 
-        for(var index in jsonResponse) {
+        for (var index in jsonResponse) {
             var responseObject = jsonResponse[index];
             var queryKey = queryKeys[index];
             var jsonObject = responseObject[queryKey];
@@ -404,14 +412,14 @@ Query.prototype = {
                 factory.initializeCategoryManager(jsonObject);
             } else if (queryKey === Query.QUERY_LIVE_VARIANT) {
                 // async case
-                var variantsResult = factory.createVariantsResult(jsonObject, query).then(function(result) {
+                var variantsResult = factory.createVariantsResult(jsonObject, query).then(function (result) {
                     return result;
-                }, function(err) {
+                }, function (err) {
                     // TODO ERROR HANDLING
                     return null;
                 });
                 results.push(variantsResult);
-            } else{
+            } else {
                 var method = mapping[queryKey];
                 results.push(factory[method](jsonObject, query));
             }

@@ -12,9 +12,9 @@ var when = require('when');
  **/
 function Client(appId, appPassword, apiEndPoint) {
     // properties
-    this.API_END_POINT_STAGE   = 'http://shop-api.staging.aboutyou.de/api';
+    this.API_END_POINT_STAGE = 'http://shop-api.staging.aboutyou.de/api';
     this.API_END_POINT_SANDBOX = 'http://shop-api.sandbox.aboutyou.de/api';
-    this.API_END_POINT_LIVE    = 'https://shop-api.aboutyou.de/api';
+    this.API_END_POINT_LIVE = 'https://shop-api.aboutyou.de/api';
 
 
     this._appId;
@@ -32,7 +32,7 @@ Client.prototype = {
      * @param {string} appId        the app id for client authentication
      * @param {string} appPassword  the app password/token for client authentication.
      */
-    setAppCredentials: function(appId, appPassword){
+    setAppCredentials: function (appId, appPassword) {
         this._appId = appId;
         this._appPassword = appPassword;
     },
@@ -40,7 +40,7 @@ Client.prototype = {
     /**
      * @returns {string} current used api endpoint
      */
-    getApiEndPoint: function() {
+    getApiEndPoint: function () {
         return this._apiEndPoint;
     },
 
@@ -50,7 +50,7 @@ Client.prototype = {
      *                              then the default endpoints will be used or
      *                              an absolute url
      */
-    setApiEndpoint: function(apiEndPoint) {
+    setApiEndpoint: function (apiEndPoint) {
         switch (apiEndPoint) {
             case 'stage':
                 this._apiEndPoint = this.API_END_POINT_STAGE;
@@ -75,18 +75,18 @@ Client.prototype = {
      * @return {Promise} promise response object
      *
      */
-    request: function(body) {
+    request: function (body) {
         var defer = when.defer();
         var options = {
-            'auth' : {
-                'user' : this._appId.toString(),
-                'pass' : this._appPassword
+            'auth': {
+                'user': this._appId.toString(),
+                'pass': this._appPassword
             },
-            'body' : body
+            'body': body
         };
 
         request.post(this.getApiEndPoint(), options, function (error, response, body) {
-            if(error) {
+            if (error) {
                 defer.reject(error);
             } else {
                 defer.resolve(response);

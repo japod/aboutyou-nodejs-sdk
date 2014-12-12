@@ -25,26 +25,27 @@ ProductFields.tags = "tags";
 ProductFields.styles = "styles";
 
 ProductFields.CONSTANTS = {
-    IS_ACTIVE : "active",
-    BRAND : "brand_id",
-    DESCRIPTION_LONG : "description_long",
-    DESCRIPTION_SHORT : "description_short",
-    DEFAULT_VARIANT : "default_variant",
-    VARIANTS : "variants",
-    MIN_PRICE : "min_price",
-    MAX_PRICE : "max_price",
-    IS_SALE : "sale",
-    DEFAULT_IMAGE : "default_image",
-    ATTRIBUTES_MERGED : "attributes_merged",
-    CATEGORIES : "categories",
-    INACTIVE_VARIANTS : "inactive_variants",
-    MAX_SAVINGS : "max_savings",
-    MAX_SAVINGS_PERCENTAGE : "max_savings_percentage",
-    TAGS : "tags",
-    STYLES : "styles"
+    IS_ACTIVE: "active",
+    BRAND: "brand_id",
+    DESCRIPTION_LONG: "description_long",
+    DESCRIPTION_SHORT: "description_short",
+    DEFAULT_VARIANT: "default_variant",
+    VARIANTS: "variants",
+    MIN_PRICE: "min_price",
+    MAX_PRICE: "max_price",
+    IS_SALE: "sale",
+    DEFAULT_IMAGE: "default_image",
+    ATTRIBUTES_MERGED: "attributes_merged",
+    CATEGORIES: "categories",
+    INACTIVE_VARIANTS: "inactive_variants",
+    MAX_SAVINGS: "max_savings",
+    MAX_SAVINGS_PERCENTAGE: "max_savings_percentage",
+    TAGS: "tags",
+    STYLES: "styles"
 };
 
-function ProductFields() {};
+function ProductFields() {
+};
 
 ProductFields.filterFields = function (fields) {
     fields = _.uniq(fields);
@@ -52,17 +53,17 @@ ProductFields.filterFields = function (fields) {
     // styles are not yet supported by the API
     var index = _.indexOf(this.STYLES, fields);
 
-    if(index != -1) {
+    if (index != -1) {
         delete fields[index];
     }
 
-    if(_.indexOf(this.ATTRIBUTES_MERGED, fields) === -1 && this.requiresFacets(fields)) {
+    if (_.indexOf(this.ATTRIBUTES_MERGED, fields) === -1 && this.requiresFacets(fields)) {
         fields.push(ProductFields.ATTRIBUTES_MERGED);
     }
     return fields;
 };
 
-ProductFields.requiresFacets = function(fields) {
+ProductFields.requiresFacets = function (fields) {
     var requiredFacetFields = _.intersection([
         ProductFields.BRAND,
         ProductFields.VARIANTS,
@@ -73,8 +74,8 @@ ProductFields.requiresFacets = function(fields) {
     return requiredFacetFields.length;
 };
 
-ProductFields.requiresCategories = function(fields) {
-    if(_.indexOf(fields, ProductFields.CATEGORIES) != -1) {
+ProductFields.requiresCategories = function (fields) {
+    if (_.indexOf(fields, ProductFields.CATEGORIES) != -1) {
         return true;
     }
     return false;

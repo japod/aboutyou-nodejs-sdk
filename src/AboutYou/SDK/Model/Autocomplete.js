@@ -19,7 +19,7 @@ function Autocomplete(categories, products) {
  * @param {Object} The autocomplete data as JSON object
  * @returns {Autocomplete}
  **/
-Autocomplete.createFromJson = function(jsonObject, factory) {
+Autocomplete.createFromJson = function (jsonObject, factory) {
     var autocomplete = new Autocomplete();
 
     autocomplete.categories = Autocomplete.parseCategories(jsonObject, factory);
@@ -38,13 +38,13 @@ Autocomplete.createFromJson = function(jsonObject, factory) {
  *
  * @returns {Category[]}
  */
-Autocomplete.parseCategories = function(jsonObject, factory) {
+Autocomplete.parseCategories = function (jsonObject, factory) {
     if (!jsonObject.categories) {
         return [];
     }
 
     var categories = [];
-    for (var i=0; i<jsonObject.categories.length; i++) {
+    for (var i = 0; i < jsonObject.categories.length; i++) {
         var jsonCategory = jsonObject.categories[i];
         var category = factory.createCategory(jsonCategory);
         categories.push(category);
@@ -63,13 +63,13 @@ Autocomplete.parseCategories = function(jsonObject, factory) {
  *
  * @returns {Product[]}
  */
-Autocomplete.parseProducts = function(jsonObject, factory) {
+Autocomplete.parseProducts = function (jsonObject, factory) {
     if (!jsonObject.products) {
         return [];
     }
 
     var products = [];
-    for (var i=0; i<jsonObject.products.length; i++) {
+    for (var i = 0; i < jsonObject.products.length; i++) {
         var jsonProduct = jsonObject.products[i];
         var product = factory.createProduct(jsonProduct);
         products.push(product);
@@ -83,7 +83,7 @@ Autocomplete.parseProducts = function(jsonObject, factory) {
  *
  * @returns {Product[]}
  */
-Autocomplete.prototype.getProducts = function() {
+Autocomplete.prototype.getProducts = function () {
     return this.products;
 }
 
@@ -92,7 +92,7 @@ Autocomplete.prototype.getProducts = function() {
  *
  * @returns {Category[]}
  */
-Autocomplete.prototype.getCategories = function() {
+Autocomplete.prototype.getCategories = function () {
     return this.categories;
 }
 

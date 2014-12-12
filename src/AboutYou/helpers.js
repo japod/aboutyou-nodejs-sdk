@@ -8,9 +8,9 @@ var utils = {
     /*
      * Provide simple "Class" extension mechanism
      */
-    protoExtend: function(sub) {
+    protoExtend: function (sub) {
         var Super = this;
-        var Constructor = hasOwn.call(sub, 'constructor') ? sub.constructor : function() {
+        var Constructor = hasOwn.call(sub, 'constructor') ? sub.constructor : function () {
             Super.apply(this, arguments);
         };
         Constructor.prototype = Object.create(Super.prototype);
@@ -26,7 +26,7 @@ var utils = {
         }
         return Constructor;
     },
-    rtrim: function(str, charlist) {
+    rtrim: function (str, charlist) {
         //  discuss at: http://phpjs.org/functions/rtrim/
         // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
         //    input by: Erkekjetter
@@ -43,14 +43,18 @@ var utils = {
         return (str + '')
             .replace(re, '');
     },
-    createDeferred: function(callback) {
+    createDeferred: function (callback) {
         var defer = when.defer();
 
         if (callback) {
-            defer.promise.then(function(res) {
-                setTimeout(function(){ callback(null, res) }, 0);
-            }, function(err) {
-                setTimeout(function(){ callback(err, null); }, 0);
+            defer.promise.then(function (res) {
+                setTimeout(function () {
+                    callback(null, res)
+                }, 0);
+            }, function (err) {
+                setTimeout(function () {
+                    callback(err, null);
+                }, 0);
             });
         }
 

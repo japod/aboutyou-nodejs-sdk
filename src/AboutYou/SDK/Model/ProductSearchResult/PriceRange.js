@@ -4,7 +4,8 @@
 
 var _ = require('underscore');
 
-function PriceRange() {};
+function PriceRange() {
+};
 
 /**
  * Expected json format
@@ -23,7 +24,7 @@ function PriceRange() {};
  *
  * @returns {PriceRange}
  */
-PriceRange.createFromJson = function(jsonObject) {
+PriceRange.createFromJson = function (jsonObject) {
     var priceRange = new PriceRange();
     priceRange = _.extend(priceRange, jsonObject);
     return priceRange;
@@ -32,7 +33,7 @@ PriceRange.createFromJson = function(jsonObject) {
 /**
  * @returns {number}
  */
-PriceRange.prototype.getProductCount = function() {
+PriceRange.prototype.getProductCount = function () {
     return this.count;
 }
 
@@ -40,7 +41,7 @@ PriceRange.prototype.getProductCount = function() {
  * in euro cent
  * @returns {number}
  */
-PriceRange.prototype.getFrom = function() {
+PriceRange.prototype.getFrom = function () {
     return this.from;
 }
 
@@ -48,7 +49,7 @@ PriceRange.prototype.getFrom = function() {
  * in euro cent
  * @returns {number}
  */
-PriceRange.prototype.getTo = function() {
+PriceRange.prototype.getTo = function () {
     return this.to ? this.to : null;
 }
 
@@ -56,7 +57,7 @@ PriceRange.prototype.getTo = function() {
  * in euro cent
  * @returns {number}
  */
-PriceRange.prototype.getMin = function() {
+PriceRange.prototype.getMin = function () {
     return this.min ? this.min : null;
 }
 
@@ -64,7 +65,7 @@ PriceRange.prototype.getMin = function() {
  * in euro cent
  * @returns {number}
  */
-PriceRange.prototype.getMax = function() {
+PriceRange.prototype.getMax = function () {
     return this.max ? this.max : null;
 }
 
@@ -72,7 +73,7 @@ PriceRange.prototype.getMax = function() {
  * in euro cent
  * @returns {number}
  */
-PriceRange.prototype.getMean = function() {
+PriceRange.prototype.getMean = function () {
     return parseInt(round(this.mean), 10);
 }
 
@@ -80,7 +81,7 @@ PriceRange.prototype.getMean = function() {
  * sum over all product min prices in this range
  * @returns {number}
  */
-PriceRange.prototype.getSum = function() {
+PriceRange.prototype.getSum = function () {
     return this.total;
 }
 

@@ -16,14 +16,14 @@ util.inherits(SaleCounts, TermsCounts);
 /**
  * @returns {number}
  */
-SaleCounts.prototype.getProductCountInSale = function() {
+SaleCounts.prototype.getProductCountInSale = function () {
     return this.productCountInSale;
 }
 
 /**
  * @returns {number}
  */
-SaleCounts.prototype.getProductCountNotInSale = function() {
+SaleCounts.prototype.getProductCountNotInSale = function () {
     return this.productCountNotInSale;
 }
 
@@ -32,15 +32,15 @@ SaleCounts.prototype.getProductCountNotInSale = function() {
  *
  * @returns {SaleCounts}
  */
-SaleCounts.createFromJson = function(jsonObject) {
+SaleCounts.createFromJson = function (jsonObject) {
     var saleCounts = new SaleCounts(jsonObject.total, jsonObject.other, jsonObject.missing);
     saleCounts.parseTerms(jsonObject.terms);
     return saleCounts;
 };
 
-SaleCounts.prototype.parseTerms = function(jsonTerms) {
+SaleCounts.prototype.parseTerms = function (jsonTerms) {
     var that = this;
-    jsonTerms.forEach(function(term) {
+    jsonTerms.forEach(function (term) {
         if (term.term == 0) {
             that.productCountNotInSale = term.count;
         } else {

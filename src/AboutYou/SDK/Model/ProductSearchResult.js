@@ -22,7 +22,7 @@ function ProductSearchResult() {
  * @param Defaultclear
  * @returns {ProductSearchResult}
  */
-ProductSearchResult.createFromJson = function(jsonObject, factory) {
+ProductSearchResult.createFromJson = function (jsonObject, factory) {
     var productSearchResult = new ProductSearchResult();
 
     productSearchResult._pageHash = jsonObject.pageHash || null;
@@ -30,8 +30,8 @@ ProductSearchResult.createFromJson = function(jsonObject, factory) {
     productSearchResult.productCount = jsonObject.product_count;
     productSearchResult._rawFacets = jsonObject.facets;
 
-    if(jsonObject.products) {
-        for (var i=0; i < jsonObject.products.length; i++) {
+    if (jsonObject.products) {
+        for (var i = 0; i < jsonObject.products.length; i++) {
             var jsonProduct = jsonObject.products[i];
             var product = factory.createProduct(jsonProduct);
             productSearchResult.products.push(product);
@@ -46,11 +46,11 @@ ProductSearchResult.createFromJson = function(jsonObject, factory) {
 /**
  * @returns {string}
  */
-ProductSearchResult.prototype.getPageHash = function() {
+ProductSearchResult.prototype.getPageHash = function () {
     return this.pageHash;
 }
 
-ProductSearchResult.prototype.parseFacets = function(jsonObject, factory) {
+ProductSearchResult.prototype.parseFacets = function (jsonObject, factory) {
     if (!_.isEmpty(jsonObject.categories)) {
         this.categories = factory.createCategoriesFacets(jsonObject.categories);
         delete jsonObject.categories;
@@ -72,35 +72,35 @@ ProductSearchResult.prototype.parseFacets = function(jsonObject, factory) {
 /**
  * @returns {number}
  */
-ProductSearchResult.prototype.getProductCount = function() {
+ProductSearchResult.prototype.getProductCount = function () {
     return this.productCount;
 };
 
 /**
  * @returns {Object}
  */
-ProductSearchResult.prototype.getRawFacets = function(){
+ProductSearchResult.prototype.getRawFacets = function () {
     return this.rawFacets;
 }
 
 /**
  * @returns {ProductSearchResult|FacetCounts[]}
  */
-ProductSearchResult.prototype.getFacets = function() {
+ProductSearchResult.prototype.getFacets = function () {
     return this.facets;
 }
 
 /**
  * @returns {PriceRange[]}
  */
-ProductSearchResult.prototype.getPriceRanges = function() {
+ProductSearchResult.prototype.getPriceRanges = function () {
     return this.priceRanges;
 }
 
 /**
  * @returns {Product[]}
  */
-ProductSearchResult.prototype.getProducts = function() {
+ProductSearchResult.prototype.getProducts = function () {
     return this.products;
 };
 
@@ -109,12 +109,12 @@ ProductSearchResult.prototype.getProducts = function() {
  *
  * @returns {number|null}
  */
-ProductSearchResult.prototype.getMinPrice = function() {
+ProductSearchResult.prototype.getMinPrice = function () {
     if (_.empty(this.priceRanges)) return null;
 
     var maxPrice = 0;
 
-    this.priceRanges.reverse().forEach(function(priceRange) {
+    this.priceRanges.reverse().forEach(function (priceRange) {
         if (priceRange.getProductCount() === 0) {
             return;
         }
@@ -131,12 +131,12 @@ ProductSearchResult.prototype.getMinPrice = function() {
  *
  * @returns {number|null}
  */
-ProductSearchResult.prototype.getMaxPrice = function() {
+ProductSearchResult.prototype.getMaxPrice = function () {
     if (_.empty(this.priceRanges)) return null;
 
     var maxPrice = 0;
 
-    this.priceRanges.reverse().forEach(function(priceRange) {
+    this.priceRanges.reverse().forEach(function (priceRange) {
         if (priceRange.getProductCount() === 0) {
             return;
         }
@@ -151,23 +151,23 @@ ProductSearchResult.prototype.getMaxPrice = function() {
 /**
  * @returns {number} SaleCounts
  */
-ProductSearchResult.prototype.getSaleCounts = function() {
+ProductSearchResult.prototype.getSaleCounts = function () {
     return this.saleCounts;
 }
 
 /**
  * @returns {Category[]}
  */
-ProductSearchResult.prototype.getCategories = function() {
+ProductSearchResult.prototype.getCategories = function () {
     return this.categories;
 };
 
 /**
  * @returns {Category[]}
  */
-ProductSearchResult.prototype.getCategoryTree = function() {
+ProductSearchResult.prototype.getCategoryTree = function () {
     var topLevelCategories = [];
-    this.categories.forEach(function(category) {
+    this.categories.forEach(function (category) {
         if (category.getParent() === null) {
             topLevelCategories.push(category);
         }

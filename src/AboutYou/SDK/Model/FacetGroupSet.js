@@ -15,24 +15,24 @@ function FacetGroupSet(ids) {
 };
 
 
-FacetGroupSet.setFacetManager = function(facetManager) {
+FacetGroupSet.setFacetManager = function (facetManager) {
     FacetGroupSet.facetManager = facetManager;
 }
 
-FacetGroupSet.prototype.isEmpty = function() {
+FacetGroupSet.prototype.isEmpty = function () {
     return _.isEmpty(this.ids);
 }
 
-FacetGroupSet.prototype.getIds = function() {
+FacetGroupSet.prototype.getIds = function () {
     return this.ids;
 };
 
-FacetGroupSet.prototype.genLazyGroups = function() {
+FacetGroupSet.prototype.genLazyGroups = function () {
     var groups = [];
-    for(var groupId in this.ids) {
+    for (var groupId in this.ids) {
         var facetIds = this.ids[groupId],
             group = new FacetGroup(groupId, null);
-        for(var facetId in facetIds) {
+        for (var facetId in facetIds) {
             var facet = new Facet(facetId, null, null, groupId, null);
             group.addFacet(facet);
         }
@@ -41,7 +41,7 @@ FacetGroupSet.prototype.genLazyGroups = function() {
     return groups;
 };
 
-FacetGroupSet.prototype.getLazyGroups = function() {
+FacetGroupSet.prototype.getLazyGroups = function () {
     if (this.facets !== null) {
         return this.groups;
     } else {
@@ -49,21 +49,21 @@ FacetGroupSet.prototype.getLazyGroups = function() {
     }
 };
 
-FacetGroupSet.prototype.fetch = function() {
+FacetGroupSet.prototype.fetch = function () {
     var that = this;
 
     if (!_.isEmpty(this.facets)) return;
 
-    for(var groupId in this.ids) {
+    for (var groupId in this.ids) {
 
         var facetIds = this.ids[groupId];
 
-        facetIds.forEach(function(facetId) {
+        facetIds.forEach(function (facetId) {
 
             var facet = FacetGroupSet.facetManager.getFacet(groupId, facetId);
 
             if (facet) {
-                if(that.groups[groupId]) {
+                if (that.groups[groupId]) {
                     var group = that.groups[groupId];
                 } else {
                     var group = new FacetGroup(groupId, facet.groupName);
@@ -79,7 +79,7 @@ FacetGroupSet.prototype.fetch = function() {
 /**
  * @returns {FacetGroup[]}
  */
-FacetGroupSet.prototype.getGroups = function() {
+FacetGroupSet.prototype.getGroups = function () {
     if (_.isEmpty(this.groups)) {
         this.fetch();
     }
@@ -92,7 +92,7 @@ FacetGroupSet.prototype.getGroups = function() {
  *
  * @returns {FacetGroup|null}
  */
-FacetGroupSet.prototype.getGroup = function(groupId) {
+FacetGroupSet.prototype.getGroup = function (groupId) {
     var groups = this.getGroups();
     if (groups && groups[groupId]) {
         return groups[groupId];
@@ -105,7 +105,7 @@ FacetGroupSet.prototype.getGroup = function(groupId) {
  *
  * @returns {boolean}
  */
-FacetGroupSet.prototype.hasGroup = function(groupId) {
+FacetGroupSet.prototype.hasGroup = function (groupId) {
     return !empty(this.ids[groupId]);
 };
 
@@ -114,20 +114,20 @@ FacetGroupSet.prototype.hasGroup = function(groupId) {
  *
  * @returns {Facet|null}
  */
-FacetGroupSet.prototype.getFacetByKey = function(key) {
+FacetGroupSet.prototype.getFacetByKey = function (key) {
     this.fetch();
     return (this.facets[key]) ? this.facets[$key] : null;
 };
 
 
-FacetGroupSet.prototype.getFacet = function(facetGroupId, facetId) {
+FacetGroupSet.prototype.getFacet = function (facetGroupId, facetId) {
 
-    if(_.isEmpty(this.facets)) {
+    if (_.isEmpty(this.facets)) {
         this.fetch();
     }
 
     var foundFacet = _.findWhere(this.facets, {
-        "groupId" : facetGroupId,
+        "groupId": facetGroupId,
         "id": facetId
     });
 
@@ -140,13 +140,13 @@ FacetGroupSet.prototype.getFacet = function(facetGroupId, facetId) {
  *
  * @returns {string}
  */
-FacetGroupSet.prototype.getUniqueKey = function() {
+FacetGroupSet.prototype.getUniqueKey = function () {
     var ids = this.ids;
     ids.sort();
     return JSON.stringify(ids);
 };
 
-FacetGroupSet.prototype.contains = function(facetCompable) {
+FacetGroupSet.prototype.contains = function (facetCompable) {
     if (facetCompable instanceof FacetGroupSet) {
         return this._containsFacetGroupSet(facetCompable);
     }
@@ -158,7 +158,7 @@ FacetGroupSet.prototype.contains = function(facetCompable) {
     return false;
 };
 
-FacetGroupSet.prototype._containsFacetGetGroupInterface = function(facet) {
+FacetGroupSet.prototype._containsFacetGetGroupInterface = function (facet) {
     var myLazyGroups = this.getLazyGroups();
     var id = facet.getGroupId();
 
@@ -168,14 +168,14 @@ FacetGroupSet.prototype._containsFacetGetGroupInterface = function(facet) {
     return false;
 };
 
-FacetGroupSet.prototype._containsFacetGroupSet = function(facetGroupSet) {
-    if(this.getUniqueKey() === facetGroupSet.getUniqueKey()) {
+FacetGroupSet.prototype._containsFacetGroupSet = function (facetGroupSet) {
+    if (this.getUniqueKey() === facetGroupSet.getUniqueKey()) {
         return true;
     }
 
     var myLazyGroups = this.getLazyGroups();
     var facetGroups = facetGroupSet.getLazyGroups();
-    for(var id in facetGroups) {
+    for (var id in facetGroups) {
         var group = facetGroups[id];
         if (!myLazyGroups[id] || myLazyGroups[id].getUniqueKey() !== group.getUniqueKey()) {
             return false;
@@ -185,12 +185,12 @@ FacetGroupSet.prototype._containsFacetGroupSet = function(facetGroupSet) {
     return true;
 };
 
-FacetGroupSet.mergeFacetIds = function(facetIdsArray) {
+FacetGroupSet.mergeFacetIds = function (facetIdsArray) {
     var ids = [];
     for (var facetIds in facetIdsArray) {
-        for(var groupId in facetIds) {
+        for (var groupId in facetIds) {
             var fIds = facetIds[groupId];
-            if(ids[groupId]) {
+            if (ids[groupId]) {
                 ids[groupId] = ids[groupId].concat(fIds);
             } else {
                 ids[groupId] = fIds;
@@ -204,7 +204,7 @@ FacetGroupSet.mergeFacetIds = function(facetIdsArray) {
  * @return {string[]}
  */
 
-FacetGroupSet.prototype.getGroupIds = function() {
+FacetGroupSet.prototype.getGroupIds = function () {
     return _.key(this.ids);
 };
 

@@ -26,7 +26,7 @@ function Facet(id, name, value, groupId, groupName, options) {
  *
  * @returns {Facet}
  */
-Facet.createFromJson = function(jsonObject) {
+Facet.createFromJson = function (jsonObject) {
     var value = jsonObject.value ? jsonObject.value : null;
     var options = jsonObject.options ? jsonObject.options : null;
     return new Facet(jsonObject.facet_id, jsonObject.name, value, jsonObject.id, jsonObject.group_name, options);
@@ -37,7 +37,7 @@ Facet.createFromJson = function(jsonObject) {
  *
  * @returns {number}
  */
-Facet.prototype.getId = function() {
+Facet.prototype.getId = function () {
     return this.id;
 };
 
@@ -46,7 +46,7 @@ Facet.prototype.getId = function() {
  *
  * @returns {string}
  */
-Facet.prototype.getUniqueKey = function() {
+Facet.prototype.getUniqueKey = function () {
     return this.getGroupId() + ':' + this.getId();
 };
 
@@ -55,7 +55,7 @@ Facet.prototype.getUniqueKey = function() {
  * @static
  * @returns {string}
  */
-Facet.uniqueKey = function(groupId, facetId) {
+Facet.uniqueKey = function (groupId, facetId) {
     return groupId + ':' + facetId;
 };
 
@@ -64,7 +64,7 @@ Facet.uniqueKey = function(groupId, facetId) {
  *
  * @returns {string}
  */
-Facet.prototype.getName = function() {
+Facet.prototype.getName = function () {
     return this.name;
 };
 
@@ -73,7 +73,7 @@ Facet.prototype.getName = function() {
  *
  * @returns {string}
  */
-Facet.prototype.getValue = function() {
+Facet.prototype.getValue = function () {
     return this.value;
 };
 
@@ -82,7 +82,7 @@ Facet.prototype.getValue = function() {
  *
  * @return {number}
  */
-Facet.prototype.getGroupId = function() {
+Facet.prototype.getGroupId = function () {
     return this.groupId;
 };
 
@@ -91,7 +91,7 @@ Facet.prototype.getGroupId = function() {
  *
  * @return {string}
  */
-Facet.prototype.getGroupName = function() {
+Facet.prototype.getGroupName = function () {
     return this.groupName;
 };
 
@@ -102,7 +102,7 @@ Facet.prototype.getGroupName = function() {
  *
  * @return {string | null}
  */
-Facet.prototype.getOption = function(key) {
+Facet.prototype.getOption = function (key) {
     if (this.options) {
         for (var option in this.options) {
             if (option.key == key) {

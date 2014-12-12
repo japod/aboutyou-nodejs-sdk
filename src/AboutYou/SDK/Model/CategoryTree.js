@@ -15,7 +15,7 @@ function CategoryTree(categoryManager) {
  * @param {boolean} activeOnly if true, then only active categories will returned, otherwise all categories
  * @returns {Category[]}
  */
-CategoryTree.prototype.getCategories = function(activeOnly) {
+CategoryTree.prototype.getCategories = function (activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
     return this._categoryManager.getCategoryTree(activeOnly);
 };
@@ -23,7 +23,7 @@ CategoryTree.prototype.getCategories = function(activeOnly) {
 /**
  * Count active root all categories
  */
-CategoryTree.prototype.count = function() {
+CategoryTree.prototype.count = function () {
     return count(this.getCategories(true));
 };
 

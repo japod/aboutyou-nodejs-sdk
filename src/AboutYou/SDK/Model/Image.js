@@ -7,9 +7,9 @@ var ImageSize = require('./ImageSize');
  * @returns {Image}
  */
 function Image() {
-    this.MIN_WIDTH  = 50;
+    this.MIN_WIDTH = 50;
     this.MIN_HEIGHT = 50;
-    this.MAX_WIDTH  = 1400;
+    this.MAX_WIDTH = 1400;
     this.MAX_HEIGHT = 2000;
 };
 
@@ -18,36 +18,36 @@ function Image() {
  * @param {Object} jsonObject
  * @returns {Image}
  */
-Image.createFromJson = function(jsonObject) {
-   var image = new Image();
+Image.createFromJson = function (jsonObject) {
+    var image = new Image();
 
-   image.additionalItems = typeof(jsonObject.additional_items) != 'undefined' ? jsonObject.additional_items : null;
-   image.angle           = typeof(jsonObject.angle) != 'undefined' ? jsonObject.angle : null;
-   image.background      = typeof(jsonObject.background) != 'undefined' ? jsonObject.background : null;
-   image.color           = typeof(jsonObject.color) != 'undefined' ? jsonObject.color : null;
-   image.ext             = typeof(jsonObject.ext) != 'undefined' ? jsonObject.ext : null;
-   image.filesize        = typeof(jsonObject.size) != 'undefined' ? jsonObject.size : 0;
-   image.focus           = typeof(jsonObject.focus) != 'undefined' ? jsonObject.focus : null;
-   image.gender          = typeof(jsonObject.gender) != 'undefined' ? jsonObject.gender : null;
-   image.hash            = jsonObject.hash;
-   image.mimetype        = jsonObject.mime;
-   image.modelData       = typeof(jsonObject.model_data) != 'undefined' ? jsonObject.model_data : null;
-   image.nextDetailLevel = typeof(jsonObject.next_detail_level) != 'undefined' ? jsonObject.next_detail_level : null;
-   image.preparation     = typeof(jsonObject.preparation) != 'undefined' ? jsonObject.preparation : null;
-   image.tags            = typeof(jsonObject.tags) != 'undefined' ? jsonObject.tags : null;
-   image.type            = typeof(jsonObject.type) != 'undefined' ? jsonObject.type : null;
-   image.view            = typeof(jsonObject.view) != 'undefined' ? jsonObject.view : null;
+    image.additionalItems = typeof(jsonObject.additional_items) != 'undefined' ? jsonObject.additional_items : null;
+    image.angle = typeof(jsonObject.angle) != 'undefined' ? jsonObject.angle : null;
+    image.background = typeof(jsonObject.background) != 'undefined' ? jsonObject.background : null;
+    image.color = typeof(jsonObject.color) != 'undefined' ? jsonObject.color : null;
+    image.ext = typeof(jsonObject.ext) != 'undefined' ? jsonObject.ext : null;
+    image.filesize = typeof(jsonObject.size) != 'undefined' ? jsonObject.size : 0;
+    image.focus = typeof(jsonObject.focus) != 'undefined' ? jsonObject.focus : null;
+    image.gender = typeof(jsonObject.gender) != 'undefined' ? jsonObject.gender : null;
+    image.hash = jsonObject.hash;
+    image.mimetype = jsonObject.mime;
+    image.modelData = typeof(jsonObject.model_data) != 'undefined' ? jsonObject.model_data : null;
+    image.nextDetailLevel = typeof(jsonObject.next_detail_level) != 'undefined' ? jsonObject.next_detail_level : null;
+    image.preparation = typeof(jsonObject.preparation) != 'undefined' ? jsonObject.preparation : null;
+    image.tags = typeof(jsonObject.tags) != 'undefined' ? jsonObject.tags : null;
+    image.type = typeof(jsonObject.type) != 'undefined' ? jsonObject.type : null;
+    image.view = typeof(jsonObject.view) != 'undefined' ? jsonObject.view : null;
 
-   image.imageSize = new ImageSize(jsonObject.image.width, jsonObject.image.height);
+    image.imageSize = new ImageSize(jsonObject.image.width, jsonObject.image.height);
 
-   return image;
+    return image;
 };
 
-Image.getBaseUrl = function(){
+Image.getBaseUrl = function () {
     return Image.baseUrl;
 };
 
-Image.setBaseUrl = function(baseUrl) {
+Image.setBaseUrl = function (baseUrl) {
     Image.baseUrl = baseUrl || '';
 };
 
@@ -56,7 +56,7 @@ Image.setBaseUrl = function(baseUrl) {
  *
  * @returns {string[]}
  */
-Image.prototype.getAdditionalItems = function() {
+Image.prototype.getAdditionalItems = function () {
     return this.additionalItems;
 };
 
@@ -65,7 +65,7 @@ Image.prototype.getAdditionalItems = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getAngle = function() {
+Image.prototype.getAngle = function () {
     return this.angle;
 };
 
@@ -74,28 +74,28 @@ Image.prototype.getAngle = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getBackground = function() {
+Image.prototype.getBackground = function () {
     return this.background;
 };
 
 /**
  * @return {null|string[]}
  */
-Image.prototype.getColor = function() {
+Image.prototype.getColor = function () {
     return this.color;
 };
 
 /**
  * @returns {null|string}
  */
-Image.prototype.getExt = function() {
+Image.prototype.getExt = function () {
     return this.ext;
 };
 
 /**
  * @returns {number}
  */
-Image.prototype.getFileSize = function() {
+Image.prototype.getFileSize = function () {
     return this.filesize;
 };
 
@@ -104,7 +104,7 @@ Image.prototype.getFileSize = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getFocus = function() {
+Image.prototype.getFocus = function () {
     return this.focus;
 };
 
@@ -113,21 +113,21 @@ Image.prototype.getFocus = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getGender = function()  {
+Image.prototype.getGender = function () {
     return this.gender;
 };
 
 /**
  * @returns {null|string}
  */
-Image.prototype.getHash = function() {
+Image.prototype.getHash = function () {
     return this.hash;
 };
 
 /**
  * @returns {ImageSize}
  */
-Image.prototype.getImageSize = function(){
+Image.prototype.getImageSize = function () {
     return this.imageSize;
 };
 
@@ -146,14 +146,14 @@ Image.prototype.getImageSize = function(){
  *
  * @returns {null|Object}
  */
-Image.prototype.getModelData = function() {
+Image.prototype.getModelData = function () {
     return this.modelData;
 };
 
 /**
  * @returns {string}
  */
-Image.prototype.getMimetype = function() {
+Image.prototype.getMimetype = function () {
     return this.mimetype;
 };
 
@@ -163,7 +163,7 @@ Image.prototype.getMimetype = function() {
  *
  * @returns {null|number}
  */
-Image.prototype.getNextDetailLevel = function() {
+Image.prototype.getNextDetailLevel = function () {
     return this.nextDetailLevel;
 };
 
@@ -172,14 +172,14 @@ Image.prototype.getNextDetailLevel = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getPreparation = function(){
+Image.prototype.getPreparation = function () {
     return this.preparation;
 };
 
 /**
  * @returns {null|string[]}
  */
-Image.prototype.getTags = function() {
+Image.prototype.getTags = function () {
     return this.tags;
 };
 
@@ -188,7 +188,7 @@ Image.prototype.getTags = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getType = function() {
+Image.prototype.getType = function () {
     return this.type;
 };
 
@@ -197,8 +197,7 @@ Image.prototype.getType = function() {
  *
  * @returns {null|string}
  */
-Image.prototype.getView = function()
-{
+Image.prototype.getView = function () {
     return this.view;
 };
 
@@ -209,7 +208,7 @@ Image.prototype.getView = function()
  *
  * @returns {string} returns the relative url
  */
-Image.prototype.getUrl = function(width, height) {
+Image.prototype.getUrl = function (width, height) {
     width = width || 200;
     height = height || 200;
 

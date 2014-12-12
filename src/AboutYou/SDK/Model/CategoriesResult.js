@@ -17,14 +17,14 @@ function CategoriesResult(categoryManager, ids) {
 /**
  * @returns {Category[]}
  */
-CategoriesResult.prototype.getCategories = function() {
+CategoriesResult.prototype.getCategories = function () {
     return this.categories;
 };
 
 /**
  * @return {string[]} array of product ids
  */
-CategoriesResult.prototype.getCategoriesNotFound = function() {
+CategoriesResult.prototype.getCategoriesNotFound = function () {
     var idsFound = _.keys(this.categories);
 
     var idsNotFound = _.difference(this.ids, idsFound);
@@ -36,7 +36,7 @@ CategoriesResult.prototype.getCategoriesNotFound = function() {
  * Count of all fetched Products
  * @returns {number}
  */
-CategoriesResult.prototype.count = function() {
+CategoriesResult.prototype.count = function () {
     return this.categories.length;
 };
 

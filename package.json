@@ -1,20 +1,24 @@
 {
-  "name": "aboutyou-sdk",
-  "version": "0.1.0",
-  "description": "ABOUT YOU app SDK",
-  "main": "src/AboutYou/AboutYou.js",
-  "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha --recursive --timeout=5000 --reporter spec"
-  },
-  "author": "Patrick Michelberger <patrick.michelberger@aboutyou.de> (http://developer.aboutyou.de/)",
-  "license": "MIT",
-  "devDependencies": {
-    "chai": "^1.8.0",
-    "mocha": "^2.0.1"
-  },
-  "dependencies": {
-    "request": "^2.45.0",
-    "underscore": "^1.7.0",
-    "when": "^3.5.0"
-  }
+    "name": "aboutyou-sdk",
+    "version": "0.1.0",
+    "description": "ABOUT YOU app SDK",
+    "main": "src/AboutYou/AboutYou.js",
+    "scripts": {
+        "test": "node ./node_modules/mocha/bin/mocha --recursive --timeout=5000 --reporter spec"
+    },
+    "author": "Patrick Michelberger <patrick.michelberger@aboutyou.de> (http://developer.aboutyou.de/)",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aboutyou/aboutyou-nodejs-sdk.git"
+    },
+    "devDependencies": {
+        "chai": "^1.8.0",
+        "mocha": "^2.0.1"
+    },
+    "dependencies": {
+        "request": "^2.45.0",
+        "underscore": "^1.7.0",
+        "when": "^3.5.0"
+    }
 }

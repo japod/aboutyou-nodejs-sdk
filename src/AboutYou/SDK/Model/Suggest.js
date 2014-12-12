@@ -4,7 +4,7 @@ function Suggest() {
     this.suggestions = [];
 };
 
-Suggest.createFromJson = function(jsonArray) {
+Suggest.createFromJson = function (jsonArray) {
     return jsonArray;
 }
 

@@ -8,11 +8,11 @@ function ProductsResult() {
     this.idsNotFound = [];
     this.errors = [];
 
-    this.getProducts = function() {
-      return this.products;
+    this.getProducts = function () {
+        return this.products;
     };
 
-    this.getPageHash = function() {
+    this.getPageHash = function () {
         return this.pageHash;
     };
 };
@@ -52,7 +52,7 @@ ProductsResult.createFromJson = function (jsonObject, factory) {
 /**
  * @returns {number[]} array of product ids
  */
-ProductsResult.prototype.getProductsNotFound = function() {
+ProductsResult.prototype.getProductsNotFound = function () {
     return this.idsNotFound;
 }
 

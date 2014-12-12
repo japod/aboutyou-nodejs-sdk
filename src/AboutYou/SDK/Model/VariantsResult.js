@@ -18,7 +18,7 @@ function VariantsResult() {
  * @param {ProductSearchResult} productSearchResult
  * @returns {VariantsResult}
  */
-VariantsResult.create = function(variants, errors, productSearchResult) {
+VariantsResult.create = function (variants, errors, productSearchResult) {
     var variantsResult = new VariantsResult();
     variantsResult.errors = errors;
 
@@ -30,12 +30,12 @@ VariantsResult.create = function(variants, errors, productSearchResult) {
     // get products from product-search
     var products = productSearchResult.getProducts();
 
-    for(var variantId in variants) {
+    for (var variantId in variants) {
         var productId = variants[variantId];
-        for(var index in products) {
+        for (var index in products) {
             var product = products[index];
 
-            if (product.getId() ===  productId) {
+            if (product.getId() === productId) {
                 var variant = product.getVariantById(variantId);
                 if (variant instanceof Variant) {
                     variantsResult.variants.push(variant);
@@ -53,21 +53,21 @@ VariantsResult.create = function(variants, errors, productSearchResult) {
 /**
  * @returns {boolean}
  */
-VariantsResult.prototype.hasVariantsFound = function() {
+VariantsResult.prototype.hasVariantsFound = function () {
     return this.variants.length > 0;
 }
 
 /**
  * @returns {boolean}
  */
-VariantsResult.prototype.hasVariantsNotFound = function() {
+VariantsResult.prototype.hasVariantsNotFound = function () {
     return this.errors.length > 0;
 }
 
 /**
  * @returns {Variant[]}
  */
-VariantsResult.prototype.getVariantsFound = function() {
+VariantsResult.prototype.getVariantsFound = function () {
     return this.variants;
 }
 
@@ -76,7 +76,7 @@ VariantsResult.prototype.getVariantsFound = function() {
  *
  * @returns {Variant|null}
  */
-VariantsResult.prototype.getVariantById = function(id) {
+VariantsResult.prototype.getVariantById = function (id) {
     var result = null;
 
     if (this.variants[id]) {
@@ -89,7 +89,7 @@ VariantsResult.prototype.getVariantById = function(id) {
 /**
  * @returns {number[]}
  */
-VariantsResult.prototype.getVariantsNotFound = function() {
+VariantsResult.prototype.getVariantsNotFound = function () {
     return this.errors;
 }
 

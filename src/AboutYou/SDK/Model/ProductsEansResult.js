@@ -10,11 +10,11 @@ function ProductsEansResult() {
     this.eansNotFound = [];
     this.errors = [];
 
-    this.getProducts = function() {
-      return this.products;
+    this.getProducts = function () {
+        return this.products;
     };
 
-    this.getPageHash = function() {
+    this.getPageHash = function () {
         return this.pageHash;
     };
 };
@@ -36,7 +36,7 @@ ProductsEansResult.createFromJson = function (jsonObject, factory) {
 
         var eans = jsonObject.eans;
 
-        eans.forEach(function(jsonProduct) {
+        eans.forEach(function (jsonProduct) {
             if (jsonProduct.error_code) {
                 productsEansResult.eansNotFound = productsEansResult.eansNotFound.concat(jsonProduct.ean);
                 productsEansResult.errors.push(jsonProduct);
@@ -48,7 +48,7 @@ ProductsEansResult.createFromJson = function (jsonObject, factory) {
     return productsEansResult;
 };
 
-ProductsEansResult.prototype.getEansNotFound = function() {
+ProductsEansResult.prototype.getEansNotFound = function () {
     return this.eansNotFound;
 }
 

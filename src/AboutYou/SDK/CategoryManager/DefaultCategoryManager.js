@@ -17,19 +17,19 @@ function CategoryManager(appId, cache) {
     //this.loadCachedCategories();
 };
 
-CategoryManager.prototype.loadCachedCategories = function() {
+CategoryManager.prototype.loadCachedCategories = function () {
     if (this.cache) {
         this.categories = this.cache.fetch(this.cacheKey) || null;
     }
 };
 
-CategoryManager.prototype.cacheCategories = function() {
+CategoryManager.prototype.cacheCategories = function () {
     if (this.cache) {
         this.cache.save(this.cacheKey, this.categories, CategoryManager.DEFAULT_CACHE_DURATION);
     }
 };
 
-CategoryManager.prototype.clearCache = function() {
+CategoryManager.prototype.clearCache = function () {
     if (this.cache) {
         this.cache.delete(this.cacheKey);
     }
@@ -39,12 +39,12 @@ CategoryManager.prototype.clearCache = function() {
  * @param jsonObject
  * @returns {CategoryManager}
  */
-CategoryManager.prototype.parseJson = function(jsonObject, factory) {
+CategoryManager.prototype.parseJson = function (jsonObject, factory) {
     this.categories = [];
 
     this.parentChildIds = jsonObject.parent_child;
 
-    for(var id in jsonObject.ids) {
+    for (var id in jsonObject.ids) {
         var jsonCategory = jsonObject.ids[id];
         this.categories.push(factory.createCategory(jsonCategory, this));
     }
@@ -58,7 +58,7 @@ CategoryManager.prototype.parseJson = function(jsonObject, factory) {
  *
  * @returns {boolean}
  */
-CategoryManager.prototype.isEmpty = function() {
+CategoryManager.prototype.isEmpty = function () {
     return (this.categories && this.categories.length > 0) ? false : true;
 };
 
@@ -67,7 +67,7 @@ CategoryManager.prototype.isEmpty = function() {
  * @param {boolean} activeOnly
  * @returns {Category[]}
  */
-CategoryManager.prototype.getCategoryTree = function(activeOnly) {
+CategoryManager.prototype.getCategoryTree = function (activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
     return this.getSubcategories(0, activeOnly);
 }
@@ -77,10 +77,10 @@ CategoryManager.prototype.getCategoryTree = function(activeOnly) {
  * @param {number} id
  * @returns {Category|null}
  */
-CategoryManager.prototype.getCategory = function(id) {
-    for(var index in this.categories) {
+CategoryManager.prototype.getCategory = function (id) {
+    for (var index in this.categories) {
         var category = this.categories[index];
-        if(category.id === id) {
+        if (category.id === id) {
             return category;
         }
     }
@@ -93,10 +93,10 @@ CategoryManager.prototype.getCategory = function(id) {
  * @param {boolean}activeOnly
  * @returns {Category[]}
  */
-CategoryManager.prototype.getCategories = function(ids, activeOnly) {
+CategoryManager.prototype.getCategories = function (ids, activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
 
-    if(!this.categories) {
+    if (!this.categories) {
         return [];
     }
 
@@ -106,10 +106,10 @@ CategoryManager.prototype.getCategories = function(ids, activeOnly) {
 
     var categories = [];
 
-    for(var i=0; i<this.categories.length; i++) {
+    for (var i = 0; i < this.categories.length; i++) {
         var category = this.categories[i];
 
-        if((activeOnly === Category.ALL || category.isActive()) && ids.indexOf(category.getId()) >= 0) {
+        if ((activeOnly === Category.ALL || category.isActive()) && ids.indexOf(category.getId()) >= 0) {
             categories.push(category);
 
         }
@@ -124,7 +124,7 @@ CategoryManager.prototype.getCategories = function(ids, activeOnly) {
  *
  * @returns {Category[]}
  */
-CategoryManager.prototype.getSubcategories = function(id, activeOnly) {
+CategoryManager.prototype.getSubcategories = function (id, activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
 
     if (!this.parentChildIds[id]) {
@@ -132,8 +132,8 @@ CategoryManager.prototype.getSubcategories = function(id, activeOnly) {
     }
 
     var ids = this.parentChildIds[id];
-    ids = ids.map(function(id) {
-       return parseInt(id, 10);
+    ids = ids.map(function (id) {
+        return parseInt(id, 10);
     });
 
     return this.getCategories(ids, activeOnly);
@@ -144,7 +144,7 @@ CategoryManager.prototype.getSubcategories = function(id, activeOnly) {
  *
  * @returns {Category[]}
  */
-CategoryManager.prototype.getCategoryTree = function(activeOnly) {
+CategoryManager.prototype.getCategoryTree = function (activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
     return this.getSubcategories(0, activeOnly);
 };
@@ -152,7 +152,7 @@ CategoryManager.prototype.getCategoryTree = function(activeOnly) {
 /**
  * @returns {Category[]}
  */
-CategoryManager.prototype.getAllCategories = function() {
+CategoryManager.prototype.getAllCategories = function () {
     return this.categories;
 };
 
@@ -162,9 +162,9 @@ CategoryManager.prototype.getAllCategories = function() {
  * @param {boolean} activeOnly
  * @returns {Category}
  */
-CategoryManager.prototype.getFirstCategoryByName = function(name, activeOnly) {
+CategoryManager.prototype.getFirstCategoryByName = function (name, activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
-    for(var category in this.categories) {
+    for (var category in this.categories) {
         if (category.getName() === name && (activeOnly === Category.ALL || category.isActive())) {
             return category;
         }
@@ -178,11 +178,11 @@ CategoryManager.prototype.getFirstCategoryByName = function(name, activeOnly) {
  * @param {boolean} activeOnly
  * @returns {Category}
  */
-CategoryManager.prototype.getCategoriesByName = function(name, activeOnly) {
+CategoryManager.prototype.getCategoriesByName = function (name, activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
 
-    var categories = _.filter(this.categories, function(category) {
-          return (category.getName() === name && (activeOnly === Category.ALL || category.isActive()));
+    var categories = _.filter(this.categories, function (category) {
+        return (category.getName() === name && (activeOnly === Category.ALL || category.isActive()));
     });
 
     return categories;

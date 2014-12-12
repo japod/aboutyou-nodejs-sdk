@@ -8,7 +8,8 @@ var _ = require('underscore');
  * @constructor
  * @returns {Variant}
  */
-function Variant() {};
+function Variant() {
+};
 
 /**
  * @static
@@ -18,11 +19,11 @@ function Variant() {};
  *
  * @returns {Variant}
  */
-Variant.createFromJson = function(jsonObject, product) {
+Variant.createFromJson = function (jsonObject, product) {
     var variant = new Variant();
 
     variant.jsonObject = jsonObject;
-    variant.product    = product;
+    variant.product = product;
 
     return variant;
 };
@@ -30,17 +31,17 @@ Variant.createFromJson = function(jsonObject, product) {
 /**
  * @returns {number}
  */
-Variant.prototype.getId = function() {
+Variant.prototype.getId = function () {
     return this.jsonObject.id;
 }
 
 /**
  * @returns {Image[]}
  */
-Variant.prototype.getImages = function() {
+Variant.prototype.getImages = function () {
     var images = [];
     if (this.jsonObject.images && this.jsonObject.images.length > 0) {
-        for(var i = 0; i < this.jsonObject.images.length; i++) {
+        for (var i = 0; i < this.jsonObject.images.length; i++) {
             var image = this.jsonObject.images[i];
             images.push(Image.createFromJson(image));
         }
@@ -51,14 +52,14 @@ Variant.prototype.getImages = function() {
 /**
  * @returns {string}
  */
-Variant.prototype.getAboutNumber = function() {
+Variant.prototype.getAboutNumber = function () {
     return this.jsonObject.about_number ? this.jsonObject.about_number : null;
 };
 
 /**
  * @returns {Product}
  */
-Variant.prototype.getProduct = function() {
+Variant.prototype.getProduct = function () {
     return this.product;
 };
 
@@ -69,12 +70,12 @@ Variant.prototype.getProduct = function() {
  *
  * @returns {Image}
  */
-Variant.prototype.getImageByHash = function(hash) {
+Variant.prototype.getImageByHash = function (hash) {
     var images = this.getImages();
 
-    for(var i = 0; i < images.length; i++) {
+    for (var i = 0; i < images.length; i++) {
         var image = images[i];
-        if(image.getHash() === hash) {
+        if (image.getHash() === hash) {
             return image;
         }
     }
@@ -90,7 +91,7 @@ Variant.prototype.getImageByHash = function(hash) {
  *
  * @depracted
  */
-Variant.prototype.selectImage = function(hash) {
+Variant.prototype.selectImage = function (hash) {
     if (hash) {
         this.selectedImage = this.getImageByHash(hash);
     } else {
@@ -103,7 +104,7 @@ Variant.prototype.selectImage = function(hash) {
  *
  * @returns {Image}
  */
-Variant.prototype.getImage = function() {
+Variant.prototype.getImage = function () {
     if (this.selectedImage) {
         return this.selectedImage;
     } else {
@@ -118,14 +119,14 @@ Variant.prototype.getImage = function() {
 /**
  * @returns {string}
  */
-Variant.prototype.getEan = function() {
+Variant.prototype.getEan = function () {
     return this.jsonObject.ean;
 };
 
 /**
  * @returns {boolean}
  */
-Variant.prototype.isDefault = function() {
+Variant.prototype.isDefault = function () {
     return this.jsonObject.default;
 };
 
@@ -134,7 +135,7 @@ Variant.prototype.isDefault = function() {
  *
  * @returns {number}
  */
-Variant.prototype.getPrice = function(){
+Variant.prototype.getPrice = function () {
     return this.jsonObject.price;
 };
 
@@ -143,7 +144,7 @@ Variant.prototype.getPrice = function(){
  *
  * @returns {number}
  */
-Variant.prototype.getOldPrice = function() {
+Variant.prototype.getOldPrice = function () {
     return this.jsonObject.old_price;
 };
 
@@ -152,7 +153,7 @@ Variant.prototype.getOldPrice = function() {
  *
  * @returns {number}
  */
-Variant.prototype.getRetailPrice = function() {
+Variant.prototype.getRetailPrice = function () {
     return this.jsonObject.retail_price;
 };
 
@@ -161,7 +162,7 @@ Variant.prototype.getRetailPrice = function() {
  *
  * @returns {Object|null}
  */
-Variant.prototype.getAdditionalInfo = function() {
+Variant.prototype.getAdditionalInfo = function () {
     return jsonObject.additional_info ? this.jsonObject.additional_info : null;
 };
 
@@ -173,7 +174,7 @@ Variant.prototype.getAdditionalInfo = function() {
  *
  * @returns {number}
  */
-Variant.prototype.getQuantity = function() {
+Variant.prototype.getQuantity = function () {
     return this.jsonObject.quantity ? this.jsonObject.quantity : 0;
 };
 
@@ -181,14 +182,14 @@ Variant.prototype.getQuantity = function() {
 /**
  * @returns {number[]}
  */
-Variant.prototype.getFacetIds = function() {
+Variant.prototype.getFacetIds = function () {
     return this.parseFacetIds(this.jsonObject);
 };
 
 /**
  * @returns {FacetGroupSet}
  */
-Variant.prototype.getFacetGroupSet = function() {
+Variant.prototype.getFacetGroupSet = function () {
     if (!this.facetGroups) {
         this.generateFacetGroupSet();
     }
@@ -200,7 +201,7 @@ Variant.prototype.getFacetGroupSet = function() {
  * @param {number} groupId
  * @returns {FacetGroup|null}
  */
-Variant.prototype.getFacetGroup = function(groupId) {
+Variant.prototype.getFacetGroup = function (groupId) {
     var groups = this.getFacetGroupSet();
     return groups.getGroup(groupId);
 };
@@ -208,49 +209,49 @@ Variant.prototype.getFacetGroup = function(groupId) {
 /**
  * @returns {Date|null}
  */
-Variant.prototype.getFirstActiveDate = function() {
+Variant.prototype.getFirstActiveDate = function () {
     return this.jsonObject.first_active_date ? new Date(this.jsonObject.first_active_date) : null;
 };
 
 /**
  * @returns {Date|null}
  */
-Variant.prototype.getFirstSaleDate = function() {
+Variant.prototype.getFirstSaleDate = function () {
     return this.jsonObject.first_sale_date ? new Date($this.jsonObject.first_sale_date) : null;
 };
 
 /**
  * @returns {Date|null}
  */
-Variant.prototype.getCreatedDate = function() {
+Variant.prototype.getCreatedDate = function () {
     return this.jsonObject.created_date ? new Date(this.jsonObject.created_date) : null;
 };
 
 /**
  * @returns {Date|null}
  */
-Variant.prototype.getUpdatedDate = function() {
+Variant.prototype.getUpdatedDate = function () {
     return this.jsonObject.updated_date ? new Date(this.jsonObject.updated_date) : null;
 };
 
 /**
  * @returns {FacetGroup|null}
  */
-Variant.prototype.getColor = function() {
+Variant.prototype.getColor = function () {
     return this.getFacetGroup(this.FACET_COLOR);
 };
 
 /**
  * @returns {FacetGroup|null}
  */
-Variant.prototype.getLength = function() {
+Variant.prototype.getLength = function () {
     return this.getFacetGroup(this.FACET_LENGTH);
 };
 
 /**
  * @returns {FacetGroup|null}
  */
-Variant.prototype.getSize = function() {
+Variant.prototype.getSize = function () {
     /**
      * @todo: Instance level caching
      */
@@ -267,7 +268,7 @@ Variant.prototype.getSize = function() {
  *
  * @returns {number} quantity per pack
  */
-Variant.prototype.getQuantityPerPack = function() {
+Variant.prototype.getQuantityPerPack = function () {
     var facetGroup = this.getFacetGroup(this.FACET_QUANTITY_PER_PACK);
 
     if (!facetGroup) {
@@ -290,17 +291,17 @@ Variant.prototype.getQuantityPerPack = function() {
  *
  * @returns {FacetGroup|null}
  */
-Variant.prototype.getSeasonCode = function() {
+Variant.prototype.getSeasonCode = function () {
     return this.getFacetGroup(this.FACET_SEASON_CODE);
 };
 
-var getSizeGroupId = function() {
+var getSizeGroupId = function () {
     var keys = [];
 
     var groups = this.getFacetGroupSet().getGroups();
 
     if (Array.isArray(groups)) {
-        for(var i = 0; i < groups.length; i++) {
+        for (var i = 0; i < groups.length; i++) {
             var group = groups[i];
             keys[group.getName()] = group.getGroupId();
         }
@@ -310,7 +311,7 @@ var getSizeGroupId = function() {
 
     if (sizeRun) {
         var facets = sizeRun.getFacets();
-        for(var i = 0; i < facets.length; i++) {
+        for (var i = 0; i < facets.length; i++) {
             var groupName = facets[i].getValue();
             if (keys[groupName]) {
                 return keys[groupName];
@@ -328,12 +329,12 @@ var getSizeGroupId = function() {
 };
 
 // helpers
-Variant.prototype.parseFacetIds = function(jsonObject) {
+Variant.prototype.parseFacetIds = function (jsonObject) {
     var ids = {};
     if (!_.isEmpty(jsonObject.attributes)) {
         var attrs = jsonObject.attributes;
 
-        for(var group in attrs) {
+        for (var group in attrs) {
             var gid = group.substr(11);
             ids[gid] = attrs[group];
         }
@@ -341,7 +342,7 @@ Variant.prototype.parseFacetIds = function(jsonObject) {
     return ids;
 }
 
-Variant.prototype.generateFacetGroupSet = function() {
+Variant.prototype.generateFacetGroupSet = function () {
     var ids = this.parseFacetIds(this.jsonObject);
     this.facetGroups = new FacetGroupSet(ids);
 };
