@@ -143,6 +143,24 @@ Category.prototype.getProductCount = function () {
     return this.productCount;
 }
 
+/**
+ * @returns JSONObject
+ **/
+
+Category.prototype.toJSON = function() {
+    var copy = _.clone(this, true);
+    copy.subcats = [];
+
+    if(this.subcategories) {
+        this.subcategories.forEach(function(subcategory) {
+            copy.subcats.push(subcategory.toJSON());
+        });
+    }
+
+    delete copy._categoryManager;
+    return copy;
+};
+
 // dot access
 Object.defineProperty(Category.prototype, 'parent', {
     get: Category.prototype.getParent

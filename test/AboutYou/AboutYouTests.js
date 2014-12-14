@@ -448,6 +448,15 @@ describe('AboutYou', function () {
                 done();
             });
         });
+        it('should return a valid JSON category tree result', function (done) {
+            aboutYou.fetchCategoryTree().then(function (tree) {
+                var categories = tree.categories;
+                var result = categories[0].toJSON();
+                
+                console.log("result: ", result);
+                done();
+            });
+        });
     });
 
     describe('fetchProductsByIds()', function () {
