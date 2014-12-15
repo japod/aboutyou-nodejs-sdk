@@ -420,7 +420,6 @@ Product.prototype.toJSON = function() {
 
     jsonObj.id = this.id;
     jsonObj.name = this.name;
-    jsonObj.isActive = this.isActive;
 
     if (typeof(this.isSale) !== 'undefined') {
         jsonObj.sale = this.isSale;
