@@ -209,13 +209,17 @@ Image.prototype.getView = function () {
  * @returns {string} returns the relative url
  */
 Image.prototype.getUrl = function (width, height) {
-    width = width || 200;
-    height = height || 200;
+    if (width || height) {
+        width = width || 200;
+        height = height || 200;
 
-    width = Math.max(Math.min(width, this.MAX_WIDTH), this.MIN_WIDTH);
-    height = Math.max(Math.min(height, this.MAX_WIDTH), this.MIN_WIDTH);
+        width = Math.max(Math.min(width, this.MAX_WIDTH), this.MIN_WIDTH);
+        height = Math.max(Math.min(height, this.MAX_WIDTH), this.MIN_WIDTH);
 
-    return Image.getBaseUrl() + '/' + this.hash + '?width=' + width + '&height=' + height;
+        return Image.getBaseUrl() + '/' + this.hash + '?width=' + width + '&height=' + height;
+    } else {
+        return Image.getBaseUrl() + '/' + this.hash;
+    }
 };
 
 // dot accessors
