@@ -187,4 +187,21 @@ ProductSearchResult.prototype.getCategoryTree = function () {
 }
 
 
+/**
+ * @returns JSONArray
+ **/
+
+ProductSearchResult.prototype.toJSON = function() {
+    var products = [];
+
+    if(this.products) {
+        this.products.forEach(function(product) {
+            products.push(product.toJSON());
+        });
+    }
+
+    return products;
+}
+
+
 module.exports = ProductSearchResult;

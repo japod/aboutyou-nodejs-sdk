@@ -695,6 +695,30 @@ describe('AboutYou', function () {
             });
         });
 
+        it('should return products in a proper JSON format', function (done) {
+            var sessionId = _.shuffle(chars).join('');
+            var criteria = new ProductSearchCriteria(sessionId);
+
+            criteria.filterByCategoryIds([74417, 74419]);
+
+            criteria.selectProductFields(
+                [
+                    'brand_id'
+                ]
+            );
+
+            aboutYou.fetchProductSearch(
+                criteria,
+                function(error, productSearchResult) {
+                    var jsonProducts = productSearchResult.toJSON();
+                    expect(jsonProducts).to.be.instanceof(Array);
+                    expect(jsonProducts[0].brand.id).not.to.be.empty;
+                    expect(jsonProducts[0].brand.name).not.to.be.empty;
+                    done();
+                }
+            );
+        });
+
         it('should find category facets correctly', function (done) {
             var sessionId = _.shuffle(chars).join('');
             var criteria = new ProductSearchCriteria(sessionId);
@@ -811,7 +835,6 @@ describe('AboutYou', function () {
     });
 
 });
-
 
 describe('ProductsResult', function () {
     describe('getProductsNotFound()', function () {
