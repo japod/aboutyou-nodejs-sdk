@@ -69,8 +69,15 @@ ProductSearchCriteria.prototype = {
     },
 
     filterByCategoryIds: function (categoryIds, append) {
-        if ((!categoryIds instanceof Array)) {
-            categoryIds = [categoryIds];
+        if (!(categoryIds instanceof Array)) {
+            var id = parseInt(categoryIds, 10);
+            categoryIds = [id];
+        }
+
+        if(categoryIds instanceof Array) {
+            categoryIds = categoryIds.map(function(id) {
+                return parseInt(id, 10);
+            });
         }
 
         var filter = [];

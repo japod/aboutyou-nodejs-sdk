@@ -1,6 +1,6 @@
 {
     "name": "aboutyou-sdk",
-    "version": "0.1.21",
+    "version": "0.1.22",
     "description": "ABOUT YOU app SDK",
     "main": "src/AboutYou/AboutYou.js",
     "scripts": {
