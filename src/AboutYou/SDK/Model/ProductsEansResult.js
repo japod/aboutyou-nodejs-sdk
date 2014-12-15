@@ -52,4 +52,19 @@ ProductsEansResult.prototype.getEansNotFound = function () {
     return this.eansNotFound;
 }
 
+/**
+ * @returns JSONArray
+ **/
+ProductsEansResult.prototype.toJSON = function() {
+    var products = [];
+
+    if(this.products) {
+        this.products.forEach(function(product) {
+            products.push(product.toJSON());
+        });
+    }
+
+    return products;
+}
+
 module.exports = ProductsEansResult;
