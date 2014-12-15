@@ -1,6 +1,7 @@
 'use strict'
 
 var Category = require('./Category');
+var _ = require('underscore');
 
 /**
  * @constructor
@@ -18,6 +19,23 @@ function CategoryTree(categoryManager) {
 CategoryTree.prototype.getCategories = function (activeOnly) {
     activeOnly = activeOnly || Category.ACTIVE_ONLY;
     return this._categoryManager.getCategoryTree(activeOnly);
+};
+
+
+/**
+ * @returns JSONArray
+ **/
+
+CategoryTree.prototype.toJSON = function() {
+    var categories = [];
+
+    if(this.categories) {
+        this.categories.forEach(function(category) {
+            categories.push(category.toJSON());
+        });
+    }
+
+    return categories;
 };
 
 /**

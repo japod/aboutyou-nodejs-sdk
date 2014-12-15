@@ -302,7 +302,6 @@ describe('AboutYou', function () {
                     facets[0].facetCounts.forEach(function (facetCount) {
                         expect(facetCount.facet.name).not.to.be.empty;
                         expect(facetCount.productCount).not.to.be.empty;
-
                     });
                 }
             );
@@ -450,10 +449,10 @@ describe('AboutYou', function () {
         });
         it('should return a valid JSON category tree result', function (done) {
             aboutYou.fetchCategoryTree().then(function (tree) {
-                var categories = tree.categories;
-                var result = categories[0].toJSON();
-                
-                console.log("result: ", result);
+                tree = tree.toJSON();
+                expect(tree).to.be.instanceof(Array);
+                expect(tree[0].subcategories).to.be.instanceof(Array);
+                expect(tree[0].subcategories[0].subcategories).to.be.instanceof(Array);
                 done();
             });
         });
@@ -467,6 +466,7 @@ describe('AboutYou', function () {
                 .then(function (productResult) {
                     var products = productResult.getProducts();
                     expect(products).not.to.be.empty;
+
                     done();
                 });
         });
@@ -478,6 +478,7 @@ describe('AboutYou', function () {
                 .then(function (productResult) {
                     var products = productResult.getProducts();
                     expect(products).to.have.length(2);
+
                     done();
                 });
         });
@@ -489,6 +490,7 @@ describe('AboutYou', function () {
                 .then(function (productResult) {
                     var products = productResult.getProducts();
                     expect(products[0].brand.name).to.equal('TAMARIS');
+
                     done();
                 });
         });
@@ -501,6 +503,7 @@ describe('AboutYou', function () {
                 .then(function (productResult) {
                     var products = productResult.getProducts();
                     expect(products[0].getDescriptionLong()).to.have.length.above(1);
+
                     done();
                 });
         });

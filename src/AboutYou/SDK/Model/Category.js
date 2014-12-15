@@ -149,15 +149,22 @@ Category.prototype.getProductCount = function () {
 
 Category.prototype.toJSON = function() {
     var copy = _.clone(this, true);
-    copy.subcats = [];
+    var subcats = [];
 
     if(this.subcategories) {
         this.subcategories.forEach(function(subcategory) {
-            copy.subcats.push(subcategory.toJSON());
+            subcats.push(subcategory.toJSON());
         });
     }
 
+    copy.subcategories = subcats;
+
+    // delete unused properties
     delete copy._categoryManager;
+    delete copy.productCount;
+    delete copy.parentId;
+    delete copy.position;
+
     return copy;
 };
 
