@@ -56,6 +56,21 @@ ProductsResult.prototype.getProductsNotFound = function () {
     return this.idsNotFound;
 }
 
+/**
+ * @returns JSONArray
+ **/
+ProductsResult.prototype.toJSON = function() {
+    var products = [];
+
+    if(this.products) {
+        this.products.forEach(function(product) {
+            products.push(product.toJSON());
+        });
+    }
+
+    return products;
+}
+
 Object.defineProperty(ProductsResult.prototype, 'productsNotFound', {
     get: ProductsResult.prototype.getProductsNotFound
 });
