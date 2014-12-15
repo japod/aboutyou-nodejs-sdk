@@ -272,23 +272,29 @@ Product.prototype.getVariantsByEan = function (ean) {
 };
 
 Product.parseVariants = function (jsonObject, product, attributeName) {
-    var variants = [];
+    var variants;
     if (jsonObject.variants && jsonObject.variants.length > 0) {
+        variants = [];
         for (var i = 0; i < jsonObject.variants.length; i++) {
             var variant = jsonObject.variants[i];
             variants.push(Variant.createFromJson(variant, product));
         }
+    } else {
+       variants = null;
     }
     return variants;
 };
 
 Product.parseStyles = function (jsonObject) {
-    var styles = [];
+    var styles;
     var that = this;
     if (jsonObject.styles && jsonObject.styles.length > 0) {
+        styles = [];
         jsonObject.styles.forEach(function (style) {
             styles.push(that.createFromJson(style));
         });
+    } else {
+        styles = null;
     }
     return styles;
 };
@@ -301,7 +307,7 @@ Product.parseFacetIds = function (jsonObject) {
     if (ids === null) {
         ids = this.parseFacetIdsInBrand(jsonObject);
     }
-    return (ids !== null) ? ids : [];
+    return (ids !== null) ? ids : null;
 };
 
 Product.parseFacetIdsInAttributesMerged = function (jsonObject) {
@@ -344,7 +350,7 @@ Product.parseFacetIdsInVariants = function (jsonObject) {
 };
 
 Product.parseFacetIdsInBrand = function (jsonObject) {
-    if (jsonObject.brand_id) {
+    if (!jsonObject.brand_id) {
         return null;
     }
     return [jsonObject.brand_id];
@@ -364,22 +370,23 @@ Product.createFromJson = function (jsonObject, factory) {
 
     product.id = jsonObject.id;
     product.name = jsonObject.name;
-
-    product.isSale = typeof(jsonObject.sale) != 'undefined' ? jsonObject.sale : false;
-    product.descriptionShort = typeof(jsonObject.description_short) != 'undefined' ? jsonObject.description_short : '';
-    product.descriptionLong = typeof(jsonObject.description_long) != 'undefined' ? jsonObject.description_long : '';
     product.isActive = typeof(jsonObject.active) != 'undefined' ? jsonObject.active : true;
-    product.brandId = typeof(jsonObject.brand_id) != 'undefined' ? jsonObject.brand_id : null;
-    product.merchantId = typeof(jsonObject.merchant_id) != 'undefined' ? jsonObject.merchant_id : null;
-
-    product.minPrice = typeof(jsonObject.min_price) != 'undefined' ? jsonObject.min_price : null;
-    product.maxPrice = typeof(jsonObject.max_price) != 'undefined' ? jsonObject.max_price : null;
-    product.maxSavingsPrice = typeof(jsonObject.max_savings) != 'undefined' ? jsonObject.max_savings : null;
-    product.maxSavingsPercentage = typeof(jsonObject.max_savings_percentage) != 'undefined' ? jsonObject.max_savings_percentage : null;
 
 
-    product.defaultImage = typeof(jsonObject.default_image) != 'undefined' ? Image.createFromJson(jsonObject.default_image) : null;
-    product.defaultVariant = typeof(jsonObject.default_variant) != 'undefined' ? Variant.createFromJson(jsonObject.default_variant, product) : null;
+    product.isSale = typeof(jsonObject.sale) != 'undefined' ? jsonObject.sale : undefined;
+    product.descriptionShort = typeof(jsonObject.description_short) != 'undefined' ? jsonObject.description_short : undefined;
+    product.descriptionLong = typeof(jsonObject.description_long) != 'undefined' ? jsonObject.description_long : undefined;
+    product.brandId = typeof(jsonObject.brand_id) != 'undefined' ? jsonObject.brand_id : undefined;
+    product.merchantId = typeof(jsonObject.merchant_id) != 'undefined' ? jsonObject.merchant_id : undefined;
+
+    product.minPrice = typeof(jsonObject.min_price) != 'undefined' ? jsonObject.min_price : undefined;
+    product.maxPrice = typeof(jsonObject.max_price) != 'undefined' ? jsonObject.max_price : undefined;
+    product.maxSavingsPrice = typeof(jsonObject.max_savings) != 'undefined' ? jsonObject.max_savings : undefined;
+    product.maxSavingsPercentage = typeof(jsonObject.max_savings_percentage) != 'undefined' ? jsonObject.max_savings_percentage : undefined;
+
+
+    product.defaultImage = typeof(jsonObject.default_image) != 'undefined' ? Image.createFromJson(jsonObject.default_image) : undefined;
+    product.defaultVariant = typeof(jsonObject.default_variant) != 'undefined' ? Variant.createFromJson(jsonObject.default_variant, product) : undefined;
     product.variants = this.parseVariants(jsonObject, product);
     product.inactiveVariants = this.parseVariants(jsonObject, product, 'inactive_variants');
 
@@ -399,10 +406,21 @@ Product.createFromJson = function (jsonObject, factory) {
 
     var appCategoryKey = getAppCategoryKey();
 
-    product.categoryIdPaths = appCategoryKey ? appCategoryKey : [];
+    product.categoryIdPaths = appCategoryKey ? appCategoryKey : null;
     product.facetIds = this.parseFacetIds(jsonObject);
 
     return product;
+};
+
+/**
+ * @returns JSONObject
+ **/
+
+Product.prototype.toJSON = function() {
+    var copy = _.clone(this, true);
+
+    delete copy.factory;
+    return copy;
 };
 
 // dot access
