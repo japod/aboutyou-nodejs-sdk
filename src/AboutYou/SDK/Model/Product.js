@@ -1,6 +1,6 @@
 'use strict'
 
-var Image = require('./Image'),
+var ImageModel = require('./Image'),
     Variant = require('./Variant'),
     Category = require('./Category'),
     FacetGroupSet = require('./FacetGroupSet'),
@@ -372,7 +372,6 @@ Product.createFromJson = function (jsonObject, factory) {
     product.name = jsonObject.name;
     product.isActive = typeof(jsonObject.active) != 'undefined' ? jsonObject.active : true;
 
-
     product.isSale = typeof(jsonObject.sale) != 'undefined' ? jsonObject.sale : undefined;
     product.descriptionShort = typeof(jsonObject.description_short) != 'undefined' ? jsonObject.description_short : undefined;
     product.descriptionLong = typeof(jsonObject.description_long) != 'undefined' ? jsonObject.description_long : undefined;
@@ -385,7 +384,7 @@ Product.createFromJson = function (jsonObject, factory) {
     product.maxSavingsPercentage = typeof(jsonObject.max_savings_percentage) != 'undefined' ? jsonObject.max_savings_percentage : undefined;
 
 
-    product.defaultImage = typeof(jsonObject.default_image) != 'undefined' ? Image.createFromJson(jsonObject.default_image) : undefined;
+    product.defaultImage = typeof(jsonObject.default_image) != 'undefined' ? ImageModel.createFromJson(jsonObject.default_image) : undefined;
     product.defaultVariant = typeof(jsonObject.default_variant) != 'undefined' ? Variant.createFromJson(jsonObject.default_variant, product) : undefined;
     product.variants = this.parseVariants(jsonObject, product);
     product.inactiveVariants = this.parseVariants(jsonObject, product, 'inactive_variants');
@@ -417,10 +416,101 @@ Product.createFromJson = function (jsonObject, factory) {
  **/
 
 Product.prototype.toJSON = function() {
-    var copy = _.clone(this, true);
+    var jsonObj = {};
 
-    delete copy.factory;
-    return copy;
+    jsonObj.id = this.id;
+    jsonObj.name = this.name;
+    jsonObj.isActive = this.isActive;
+
+    if (typeof(this.isSale) !== 'undefined') {
+        jsonObj.sale = this.isSale;
+    }
+    if (typeof(this.descriptionShort) !== 'undefined') {
+       jsonObj.descriptionShort = this.descriptionShort;
+    }
+    if (typeof(this.descriptionLong) !== 'undefined') {
+        jsonObj.descriptionLong = this.descriptionLong;
+    }
+    if (typeof(this.brandId) !== 'undefined') {
+        var brand = this.brand;
+        jsonObj.brand = {
+            "id" : brand.id,
+            "name": brand.name
+        };
+    }
+    if (typeof(this.merchantId) !== 'undefined') {
+        jsonObj.merchantId = this.merchantId;
+    }
+
+    if (typeof(this.minPrice) !== 'undefined') {
+        jsonObj.minPrice = this.minPrice;
+    }
+    if (typeof(this.maxPrice) !== 'undefined') {
+        jsonObj.maxPrice = this.maxPrice;
+    }
+    if (typeof(this.maxSavingsPrice) !== 'undefined') {
+        jsonObj.maxSavingsPrice = this.maxSavingsPrice;
+    }
+    if (typeof(this.maxSavingsPercentage) !== 'undefined') {
+        jsonObj.maxSavingsPercentage = this.maxSavingsPercentage;
+    }
+
+    if (typeof(this.defaultImage) !== 'undefined') {
+        jsonObj.defaultImage = {
+            "url" : this.defaultImage.getUrl()
+        }
+    }
+    if (typeof(this.defaultVariant) !== 'undefined') {
+        var images = this.defaultVariant.jsonObject ? this.defaultVariant.getImages() : [];
+        var imagesPopulated = populateImages(images);
+
+        jsonObj.defaultVariant = {
+            "id" : this.defaultVariant.jsonObject ? this.defaultVariant.jsonObject.id : 'undefined',
+            "ean" : this.defaultVariant.jsonObject ? this.defaultVariant.jsonObject.ean : 'undefined',
+            "price" : this.defaultVariant.jsonObject ? this.defaultVariant.jsonObject.price : 'undefined',
+            "images" : imagesPopulated
+        }
+    }
+
+    if (this.variants !== null) {
+
+        var variantsPopulated = this.variants.map(function(variant) {
+           var imagesPopulated = populateImages(variant.getImages());
+           var variantPopulated = {
+               "id" : variant.jsonObject ? variant.jsonObject.id : 'undefined',
+               "ean" : variant.jsonObject ? variant.jsonObject.ean : 'undefined',
+               "price" : variant.jsonObject ? variant.jsonObject.price : 'undefined',
+               "images" : imagesPopulated
+           };
+
+            return variantPopulated;
+        });
+
+        jsonObj.variants = variantsPopulated;
+    }
+
+    if (this.inactiveVariants !== null) {
+
+        var variantsPopulated = this.inactiveVariants.map(function(variant) {
+            var imagesPopulated = populateImages(variant.getImages());
+            var variantPopulated = {
+                "id" : variant.jsonObject ? variant.jsonObject.id : 'undefined',
+                "ean" : variant.jsonObject ? variant.jsonObject.ean : 'undefined',
+                "price" : variant.jsonObject ? variant.jsonObject.price : 'undefined',
+                "images" : imagesPopulated
+            };
+
+            return variantPopulated;
+        });
+
+        jsonObj.variants = variantsPopulated;
+    }
+
+    if (this.categoryIdPaths !== null) {
+        jsonObj.categoryIdPaths = this.categoryIdPaths;
+    }
+
+    return jsonObj;
 };
 
 // dot access
@@ -442,3 +532,12 @@ Object.defineProperty(Product.prototype, 'categoryWithLongestActivePath', {
 });
 
 module.exports = Product;
+
+var populateImages = function(images) {
+    return images.map(function(image) {
+        var imagePopulated = {
+            "url" : image.getUrl()
+        };
+        return imagePopulated;
+    });
+};
