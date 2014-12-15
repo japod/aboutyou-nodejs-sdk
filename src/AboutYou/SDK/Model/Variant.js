@@ -1,6 +1,6 @@
 'use strict'
 
-var Image = require('./Image');
+var ImageModel = require('./Image');
 var FacetGroupSet = require('./FacetGroupSet');
 var _ = require('underscore');
 
@@ -43,7 +43,7 @@ Variant.prototype.getImages = function () {
     if (this.jsonObject.images && this.jsonObject.images.length > 0) {
         for (var i = 0; i < this.jsonObject.images.length; i++) {
             var image = this.jsonObject.images[i];
-            images.push(Image.createFromJson(image));
+            images.push(ImageModel.createFromJson(image));
         }
     }
     return images;
