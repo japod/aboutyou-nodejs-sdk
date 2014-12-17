@@ -124,7 +124,7 @@ Category.prototype.getSubcategories = function (activeOnly) {
  * @returns {Category[]}
  */
 Category.prototype.getBreadCrumb = function () {
-    var breadcrumb = this.getParent() ? this.getParent().getBreadcrumb() : [];
+    var breadcrumb = this.getParent() ? this.getParent().getBreadCrumb() : [];
     breadcrumb.push(this);
     return breadcrumb;
 }

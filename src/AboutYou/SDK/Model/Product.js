@@ -433,8 +433,8 @@ Product.prototype.toJSON = function() {
     if (typeof(this.brandId) !== 'undefined') {
         var brand = this.brand;
         jsonObj.brand = {
-            "id" : brand.id,
-            "name": brand.name
+            "id" : brand ? brand.id : undefined,
+            "name": brand ? brand.name : undefined
         };
     }
     if (typeof(this.merchantId) !== 'undefined') {
