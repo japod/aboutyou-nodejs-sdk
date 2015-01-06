@@ -537,6 +537,12 @@ var populateImages = function(images) {
         var imagePopulated = {
             "url" : image.getUrl()
         };
+        if(image.type) {
+            imagePopulated.type = image.type;
+        }
+        if(image.tags) {
+            imagePopulated.tags = image.tags;
+        }
         return imagePopulated;
     });
 };
