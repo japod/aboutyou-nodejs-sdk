@@ -469,6 +469,10 @@ Product.prototype.toJSON = function() {
             "price" : this.defaultVariant.jsonObject ? this.defaultVariant.jsonObject.price : 'undefined',
             "images" : imagesPopulated
         }
+
+        if (this.defaultVariant.jsonObject && this.defaultVariant.jsonObject.old_price) {
+            jsonObj.defaultVariant.oldPrice = this.defaultVariant.jsonObject.old_price;
+        }
     }
 
     if (this.variants !== null) {
