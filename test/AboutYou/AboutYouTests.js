@@ -4,7 +4,7 @@
 var APP_DETAILS = {
     "appId": 100,
     "appPassword": '3ed93394c2b5ebd12c104b177b928ad0',
-    "apiEndPoint": 'stage'
+    "apiEndPoint": 'live'
 };
 
 var when = require('when');
@@ -525,7 +525,7 @@ describe('AboutYou', function () {
                 aboutYou.getProductFields().DEFAULT_VARIANT
             ]).then(function (productResult) {
                 var products = productResult.getProducts();
-                expect(products[0].getDefaultVariant().getId()).to.equal(6736984);
+                expect(products[0].getDefaultVariant().getId()).to.equal(6736990);
                 done();
             });
         });
@@ -548,7 +548,7 @@ describe('AboutYou', function () {
                 aboutYou.getProductFields().MAX_PRICE
             ]).then(function (productResult) {
                 var products = productResult.getProducts();
-                expect(products[0].getMaxPrice()).to.equal(7999);
+                expect(products[0].getMaxPrice()).to.equal(5999);
                 done();
             });
         });
@@ -559,7 +559,7 @@ describe('AboutYou', function () {
                 aboutYou.getProductFields().MIN_PRICE
             ]).then(function (productResult) {
                 var products = productResult.getProducts();
-                expect(products[0].getMinPrice()).to.equal(7999);
+                expect(products[0].getMinPrice()).to.equal(5999);
                 done();
             });
         });
@@ -570,7 +570,7 @@ describe('AboutYou', function () {
                 aboutYou.getProductFields().IS_SALE
             ]).then(function (productResult) {
                 var products = productResult.getProducts();
-                expect(products[0].isSale).to.be.false;
+                expect(products[0].isSale).to.be.true;
                 done();
             });
         });
