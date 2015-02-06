@@ -456,7 +456,8 @@ Product.prototype.toJSON = function() {
 
     if (typeof(this.defaultImage) !== 'undefined') {
         jsonObj.defaultImage = {
-            "url" : this.defaultImage.getUrl()
+            "url" : this.defaultImage.getUrl(),
+            "tags" : this.defaultImage.tags
         }
     }
     if (typeof(this.defaultVariant) !== 'undefined') {
