@@ -165,7 +165,7 @@ describe('AboutYou', function () {
             criteria.setLimit(limit, offset);
 
             expect(criteria._result).to.eql({
-                'limit': 200,
+                'limit': Math.max(200, limit),
                 'offset': offset
             });
             done();
